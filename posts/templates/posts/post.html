@@ -1,0 +1,10 @@
+{% extends 'main.html' %} {% block content %}
+<h3>post template</h3>
+
+{{post.author}}<br>
+{{post.subject}}<br>
+{{post.body}}<br>
+{% for tag in tags %}
+{{tag}}<br>
+{% endfor %}
+{% endblock content %}

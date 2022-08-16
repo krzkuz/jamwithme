@@ -1,0 +1,28 @@
+{% extends 'main.html' %} {% block content %}
+<style>
+  .home-container {
+    display: grid;
+    grid-template-columns: 1fr 3fr 1fr;
+  }
+</style>
+<div class="home-container">
+    <div>
+    <h5>Search by instrument</h5>
+    {% for tag in tags %}
+    {{tag}}
+    <br>
+    {% endfor %}
+    </div>
+  <div>
+    <h5>Latest activities</h5>
+    {% for post in posts %}
+    <a href="{% url 'profile' post.author.id %}">{{post.author}}</a>
+    <a href="{% url 'post' post.id %}">{{post}}</a>
+    <br />
+    {% endfor %}
+  </div>
+  <div>
+    <h5>Friends</h5>
+    </div>
+</div>
+{% endblock content %}

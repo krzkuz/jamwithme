@@ -1,0 +1,17 @@
+{% extends 'main.html' %} {% block content %}
+<h3>profile template</h3>
+
+{{profile.name}}
+<br>
+{{profile.location}}
+<br>
+{{profile.bio}}
+<br>
+<br><br><br>
+{% for post in posts %}
+{{post.author}}<br>
+{{post.subject}}<br>
+{{post.body}}<br>
+{{post.tag}}<br>
+{% endfor %}
+{% endblock content %}
