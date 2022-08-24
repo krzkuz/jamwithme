@@ -1,10 +1,32 @@
 {% extends 'main.html' %} {% block content %}
 <h3>post template</h3>
 
-{{post.author}}<br>
+<a href="{% url 'profile' post.author.id %}">{{post.author}}</a>
+{% if request.user == post.author.user %}
+<a href="{% url 'update-post' post.id %}">Update</a>
+<a href="{% url 'delete-post' post.id %}">Delete</a>
+{% endif %}
+<br>
 {{post.subject}}<br>
-{{post.body}}<br>
+{% if post.picture %}
+<img src="{{post.picture.url}}"><br>
+{% endif %}
+{% if post.record %}
+<audio controls>
+    <source src="{{post.record.url}}">
+  </audio>
+{% endif %}
+{{post.body}}<br><br><br><br>
+<!-- ratings -->
+{{post.get_likes}} like{{post.get_likes|pluralize:"s"}} --------- {{post.get_dislikes}} dislike{{post.get_dislikes|pluralize:"s"}}<br>
 {% for tag in tags %}
 {{tag}}<br>
 {% endfor %}
+<br><br><br><br>
+{% for comment in comments %}
+<a href="{% url 'profile' comment.author.id %}">{{comment.author}}</a><br>
+{{comment.body}}<br><br>
+{{comment.get_likes}} like{{comment.get_likes|pluralize:"s"}} --------- {{comment.get_dislikes}} dislike{{comment.get_dislikes|pluralize:"s"}}<br>
+{% endfor %}
+
 {% endblock content %}

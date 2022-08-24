@@ -8,21 +8,39 @@
 <div class="home-container">
     <div>
     <h5>Search by instrument</h5>
+    <a href="{% url 'posts' %}?q=">All</a><br>
     {% for tag in tags %}
-    {{tag}}
+    <a href="{% url 'posts' %}?q={{tag}}">{{tag}}</a>
     <br>
     {% endfor %}
     </div>
   <div>
+    <form action="{% url 'posts' %}">
+      <input type="text" placeholder="Search..." name="q">
+    </form>    
+    <br>
     <h5>Latest activities</h5>
     {% for post in posts %}
     <a href="{% url 'profile' post.author.id %}">{{post.author}}</a>
     <a href="{% url 'post' post.id %}">{{post}}</a>
+    {{post.created|timesince}} ago
+    {% if request.user == post.author.user %}
+    <a href="{% url 'update-post' post.id %}">Update</a>
+    <a href="{% url 'delete-post' post.id %}">Delete</a>
+    {% endif %}
     <br />
+    {{post.body|slice:":50"}}
+    <br>
     {% endfor %}
   </div>
   <div>
+    {% if request.user.is_authenticated %}
     <h5>Friends</h5>
+    {% for friend in friends %}
+    <a href="{% url 'profile' friend.id %}">{{friend}}</a>
+    <br />
+    {% endfor %}
+    {% endif %}
     </div>
 </div>
 {% endblock content %}

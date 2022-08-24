@@ -1,0 +1,9 @@
+{% extends 'main.html' %}
+{% block content %}
+<h3> Are you sure you want to delete "{{post.subject}}"</h3>
+<a href="{{ request.META.HTTP_REFERER }}">Go back</a>
+<form method="POST">
+    {% csrf_token %}
+    <input type="submit" value="Confirm">
+</form>
+{% endblock content %}

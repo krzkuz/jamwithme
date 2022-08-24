@@ -1,9 +1,10 @@
 from django.shortcuts import render, redirect
-from .models import Profile
+from .models import Instrument, Message, Profile
 from posts.models import Post
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
+from .forms import ProfileForm, InstrumentForm
 # Create your views here.
 
 def register_user(request):
@@ -40,20 +41,47 @@ def logout_user(request):
     logout(request)
     return redirect('posts')
 
-# def user_account(request):
-#     profile = request.user.profile
-#     posts = Post.objects.filter(author=profile)
-#     context = {
-#         'profile': profile,
-#         'posts': posts,
-#     }
-#     return render(request, 'users/profile.html', context)
-
 def profile(request, pk):
     profile = Profile.objects.get(id=pk)
     posts = Post.objects.filter(author=profile)
+    skills = Instrument.objects.filter(player=profile)
     context = {
         'profile': profile,
         'posts': posts,
+        'skills': skills,
     }
     return render(request, 'users/profile.html', context)
+
+def user_settings(request):
+    profile = Profile.objects.get(user=request.user)
+    form = ProfileForm(instance=profile)
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, instance=profile)
+        if form.is_valid():
+            form.save()
+            return redirect('profile', request.user.profile.id)
+    context = {
+        'form': form
+    }
+    return render(request, 'users/settings.html', context)
+
+def user_skill(request):
+    profile = Profile.objects.get(user=request.user)
+    form = InstrumentForm()
+    if request.method == 'POST':
+        form = InstrumentForm(request.POST)
+        if form.is_valid():
+            skill = form.save(commit=False)
+            skill.player = request.user.profile
+            skill.save()
+            return redirect('profile', request.user.profile.id)
+    context = {
+        'form': form
+    }
+    return render(request, 'users/skill_form.html', context)
+
+
+
+
+# def users_messages(request):
+#     users_messages = Message.objects.filter()

@@ -6,7 +6,9 @@ import uuid
 # Create your models here.
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
-    name = models.CharField(max_length=100, null=True, blank=True)
+    friend = models.ManyToManyField("self", blank=True)
+    first_name = models.CharField(max_length=100, null=True, blank=True)
+    last_name = models.CharField(max_length=100, null=True, blank=True)
     email = models.EmailField(max_length=100, null=True, blank=True)
     location = models.CharField(max_length=200, null=True, blank=True)
     bio = models.TextField(null=True, blank=True)
@@ -17,7 +19,7 @@ class Profile(models.Model):
     id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True, editable=False)
 
     def __str__(self):
-        return self.name
+        return self.user.username
 
 
 class Message(models.Model):
@@ -37,14 +39,14 @@ class Instrument(models.Model):
     name = models.CharField(max_length=100, null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True)
     id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True, editable=False)
-    levels = [
-        (1, 'novice'),
-        (2, 'beginner'),
-        (3, 'intermediate'),
-        (4, 'advanced'),
-        (5, 'expert'),
+    level_choices = [
+        ('Novice', 'Novice'),
+        ('Beginner', 'Beginner'),
+        ('Intermediate', 'Intermediate'),
+        ('Advanced', 'Advanced'),
+        ('Expert', 'Expert'),
     ]
-    level = models.DecimalField(max_digits=1, decimal_places=0, choices=levels, default=1)
+    level = models.CharField(max_length=20, choices=level_choices)
 
     def __str__(self):
         return self.name

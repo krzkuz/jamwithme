@@ -1,16 +1,35 @@
 {% extends 'main.html' %} {% block content %}
 <h3>profile template</h3>
-
-{{profile.name}}
+<img style="max-width: 80px;" src="{{profile.profile_image.url}}">
+<br>
+{{profile.first_name}} {{profile.last_name}}
 <br>
 {{profile.location}}
 <br>
 {{profile.bio}}
 <br>
+{% if profile.social_youtube %}
+<a href="{{profile.social_youtube}}">Youtube</a>
+<br>
+{% endif %}
 <br><br><br>
+<a href="{% url 'skill' %}">Add your skills</a>
+<br><br><br>
+<h3>Skills:</h3>
+{% for skill in skills %}
+{{skill.name}}
+{{skill.level}}
+<br>
+{% endfor %}
+<br><br>
 {% for post in posts %}
-{{post.author}}<br>
-{{post.subject}}<br>
+{{post.author.first_name}} {{post.author.last_name}}<br>
+<a href="{% url 'post' post.id %}">{{post.subject}}</a>
+{% if request.user == post.author.user %}
+<a href="{% url 'update-post' post.id %}">Update</a>
+<a href="{% url 'delete-post' post.id %}">Delete</a>
+{% endif %}
+<br>
 {{post.body}}<br>
 {{post.tag}}<br>
 {% endfor %}
