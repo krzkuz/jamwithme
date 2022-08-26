@@ -4,7 +4,7 @@ from posts.models import Post
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
-from .forms import ProfileForm, InstrumentForm
+from .forms import MessageForm, ProfileForm, InstrumentForm
 from django.db.models import Q
 # Create your views here.
 
@@ -118,19 +118,50 @@ def followers(request, pk):
     return render(request, 'users/followers.html', context)
 
 def users_messages(request):
-    users_messages = Message.objects.filter(
+    profile = Profile.objects.get(user=request.user)
+    follow = Follow.objects.get(user=profile)
+    following = profile.follower.all()
+    followers = follow.follower.all()
+    conversations = Message.objects.filter(
         Q(sender=request.user.profile) |
         Q(recipient=request.user.profile)
     )
-    # print(users_messages, '+++++++++++++++++++++++++++++')
     context = {
-        'users_messages': users_messages,
+        'following': following,
+        'followers': followers,
+        'conversations': conversations,
     }
     return render(request, 'users/messages.html', context)
 
-def message(request, pk):
-    message = Message.objects.get(id=pk)
+# def users_messages(request):
+#     users_messages = Message.objects.filter(
+#         Q(sender=request.user.profile) |
+#         Q(recipient=request.user.profile)
+#     )
+#     context = {
+#         'users_messages': users_messages,
+#     }
+#     return render(request, 'users/messages.html', context)
+
+# def message(request, pk):
+#     message = Message.objects.get(id=pk)
+#     context = {
+#         'message': message,
+#     }
+#     return render(request, 'users/message.html', context)
+
+def send_message(request, pk):
+    form = MessageForm()
+    recipient = Profile.objects.get(id=pk)
+    if request.method == 'POST':
+        form = MessageForm(request.POST)
+        if form.is_valid():
+            message = form.save(commit=False)
+            message.sender = request.user.profile
+            message.recipient = recipient
+            message.save()
+            return redirect('profile', pk)
     context = {
-        'message': message,
+        'form': form,
     }
-    return render(request, 'users/message.html', context)
+    return render(request, 'users/message_form.html', context)

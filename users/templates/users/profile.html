@@ -17,9 +17,13 @@
 <a href="{% url 'skill' %}">Add your skills</a>
 {% endif %}
 <br><br><br>
+{% if request.user.profile.id != profile.id %}
+<h5><a href="{% url 'send_message' profile.id %}">Send message</a></h5>
+{% endif %}
 {{followers.count}} <a href="{% url 'followers' profile.id %}">follower{{followers.count|pluralize:"s"}}</a>
 {% if request.user.profile.id == profile.id %}
 {% else %}
+
 {% if request.user.profile in followers %}
 <a href="{% url 'unfollow' profile.id %}">Unfollow</a>
 {% else %}

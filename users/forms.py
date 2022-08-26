@@ -1,6 +1,6 @@
 #from django.contrib.auth.forms
 from django.forms import ModelForm
-from .models import Profile, Instrument
+from .models import Profile, Instrument, Message
 
 
 class ProfileForm(ModelForm):
@@ -8,7 +8,14 @@ class ProfileForm(ModelForm):
         model = Profile
         exclude = ['user', 'friend', 'created', 'id']
 
+
 class InstrumentForm(ModelForm):
     class Meta:
         model = Instrument
         fields = ['name', 'level']
+
+
+class MessageForm(ModelForm):
+    class Meta:
+        model = Message
+        fields = ['body']

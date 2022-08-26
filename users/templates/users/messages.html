@@ -1,10 +1,48 @@
 {% extends 'main.html' %}
 {% block content %}
-<h4>Your messages:</h4>
+
+<style>
+    .home-container {
+      display: grid;
+      grid-template-columns: 1fr 3fr 1fr;
+    }
+  </style>
+
+<div class="home-container">
+    <div>
+        <h4>Last conversations</h4>
+        {% for conversation in conversations %}
+        {% if conversation.sender == request.user.profile %}
+        <a href="{% url 'profile' conversation.recipient.id %}">{{conversation.recipient.first_name}} {{conversation.recipient.last_name}}</a><hr>
+        {% else %}
+        <a href="{% url 'profile' conversation.sender.id %}">{{conversation.sender.first_name}} {{conversation.sender.last_name}}</a><hr>
+        {% endif %}
+        {% endfor %}
+    </div>
+
+    <div>
+
+    </div>
+
+    <div>
+        <h4>Suggested</h4>
+        {% for follow in following %}
+        {% if follow.user not in followers %}
+        <a href="{% url 'profile' follow.user.id %}">{{follow.user.first_name}} {{follow.user.last_name}}</a><hr>
+        {% endif %}
+        {% endfor %}
+
+        {% for follower in followers %}
+        <a href="{% url 'profile' follower.id %}">{{follower.first_name}} {{follower.last_name}}</a><hr>
+        {% endfor %}
+    </div>
+</div>
+<!-- <h4>Messages:</h4>
 <br>
 {% for message in users_messages %}
 <a href="{% url 'profile' message.sender.id %}">{{message.sender.first_name}} {{message.sender.last_name}}</a>
 <h4><a href="{% url 'message' message.id %}">{{message.subject}}</a></h4>
-{{message.body|slice:":50"}}
-{% endfor %}
+<p>{{message.body|slice:":50"}}</p>
+<hr>
+{% endfor %} -->
 {% endblock content %}

@@ -39,11 +39,13 @@
     <br />
     {{post.body|slice:":50"}}
     <br>
+    <hr>
     {% endfor %}
+    
   </div>
   <div>
     {% if request.user.is_authenticated %}
-    <h5>Followed</h5>
+    <h5>Following</h5>
     {% for follow in followed %}
     <a href="{% url 'profile' follow.user.id %}">{{follow}}</a>
     <br />
