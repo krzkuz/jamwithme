@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 
-from users.models import Profile
+from users.models import Follow, Profile
 from .models import Post, Tag, Comment, Rate
 from .forms import PostForm
 from django.db.models import Q
@@ -32,14 +32,19 @@ def posts(request):
     else:
         posts = Post.objects.all()
     tags = Tag.objects.all()
+    # if request.user.is_authenticated:
+    #     friends = request.user.profile.friend.all()
+    # else:
+    #     friends = None
     if request.user.is_authenticated:
-        friends = request.user.profile.friend.all()
+        profile = request.user.profile
+        followed = profile.follower.all()
     else:
-        friends = None
+        followed = None
     context = {
         'posts': posts,
         'tags': tags,
-        'friends': friends,
+        'followed': followed,
     }
     return render(request, 'posts/posts.html', context)
 
@@ -48,9 +53,14 @@ def create_post(request):
     if request.method == 'POST':
         form = PostForm(request.POST, request.FILES)
         if form.is_valid():
+            get_tags = request.POST.get('tags').replace(',', ' ').split()
             post = form.save(commit=False)
             post.author = request.user.profile
             post.save()
+            for tag in get_tags:
+                tag, created = Tag.objects.get_or_create(name=tag.lower().capitalize())
+                post.tags.add(tag)
+            
             return redirect('posts') 
     context = {
         'form': form

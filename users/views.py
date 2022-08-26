@@ -1,10 +1,11 @@
 from django.shortcuts import render, redirect
-from .models import Instrument, Message, Profile
+from .models import Follow, Instrument, Message, Profile
 from posts.models import Post
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
 from .forms import ProfileForm, InstrumentForm
+from django.db.models import Q
 # Create your views here.
 
 def register_user(request):
@@ -45,10 +46,13 @@ def profile(request, pk):
     profile = Profile.objects.get(id=pk)
     posts = Post.objects.filter(author=profile)
     skills = Instrument.objects.filter(player=profile)
+    follow = Follow.objects.get(user=profile)
+    followers = follow.follower.all()
     context = {
         'profile': profile,
         'posts': posts,
         'skills': skills,
+        'followers': followers,
     }
     return render(request, 'users/profile.html', context)
 
@@ -80,8 +84,53 @@ def user_skill(request):
     }
     return render(request, 'users/skill_form.html', context)
 
+def follow(request, pk):
+    user = Profile.objects.get(id=pk)
+    follow = Follow.objects.get(user=user)
+    follower = follow.follower.add(request.user.profile)
+    # follower = Follow.objects.create(user=user, follower=request.user.profile)
+    return redirect('profile', pk)
 
+# def add_friend(request, pk):
+#     friend = Profile.objects.get(id=pk)
+#     request.user.profile.friend.add(friend)
+#     return redirect('profile', pk)
 
+def unfollow(request, pk):
+    user = Profile.objects.get(id=pk)
+    follow = Follow.objects.get(user=user)
+    follower = follow.follower.remove(request.user.profile)
+    return redirect('profile', pk)
 
-# def users_messages(request):
-#     users_messages = Message.objects.filter()
+# def delete_friend(request, pk):
+#     friend = Profile.objects.get(id=pk)
+#     request.user.profile.friend.remove(friend)
+#     return redirect('profile', pk)
+
+def followers(request, pk):
+    profile = Profile.objects.get(id=pk)
+    follow = Follow.objects.get(user=profile)
+    followers = follow.follower.all()
+    context = {
+        'profile': profile,
+        'followers': followers,
+    }
+    return render(request, 'users/followers.html', context)
+
+def users_messages(request):
+    users_messages = Message.objects.filter(
+        Q(sender=request.user.profile) |
+        Q(recipient=request.user.profile)
+    )
+    # print(users_messages, '+++++++++++++++++++++++++++++')
+    context = {
+        'users_messages': users_messages,
+    }
+    return render(request, 'users/messages.html', context)
+
+def message(request, pk):
+    message = Message.objects.get(id=pk)
+    context = {
+        'message': message,
+    }
+    return render(request, 'users/message.html', context)

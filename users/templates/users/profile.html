@@ -13,8 +13,19 @@
 <br>
 {% endif %}
 <br><br><br>
+{% if request.user.profile.id == profile.id %}
 <a href="{% url 'skill' %}">Add your skills</a>
+{% endif %}
 <br><br><br>
+{{followers.count}} <a href="{% url 'followers' profile.id %}">follower{{followers.count|pluralize:"s"}}</a>
+{% if request.user.profile.id == profile.id %}
+{% else %}
+{% if request.user.profile in followers %}
+<a href="{% url 'unfollow' profile.id %}">Unfollow</a>
+{% else %}
+<a href="{% url 'follow' profile.id %}">Follow</a>
+{% endif %}
+{% endif %}
 <h3>Skills:</h3>
 {% for skill in skills %}
 {{skill.name}}

@@ -10,7 +10,7 @@
     <h5>Search by instrument</h5>
     <a href="{% url 'posts' %}?q=">All</a><br>
     {% for tag in tags %}
-    <a href="{% url 'posts' %}?q={{tag}}">{{tag}}</a>
+    <a href="{% url 'posts' %}?q={{tag}}"># {{tag}}</a>
     <br>
     {% endfor %}
     </div>
@@ -21,13 +21,21 @@
     <br>
     <h5>Latest activities</h5>
     {% for post in posts %}
-    <a href="{% url 'profile' post.author.id %}">{{post.author}}</a>
-    <a href="{% url 'post' post.id %}">{{post}}</a>
-    {{post.created|timesince}} ago
-    {% if request.user == post.author.user %}
-    <a href="{% url 'update-post' post.id %}">Update</a>
-    <a href="{% url 'delete-post' post.id %}">Delete</a>
+    {% if post.author.id %}
+    <p>
+      <a href="{% url 'profile' post.author.id %}">{{post.author}}</a> 
+       {{post.created|timesince}} ago
+      {% if request.user == post.author.user %}
+      <a href="{% url 'update-post' post.id %}">Update</a>
+      <a href="{% url 'delete-post' post.id %}">Delete</a>
+      {% endif %}
+    </p>
+    {% else %}
+    <p>Deleted user</p>
     {% endif %}
+    <a href="{% url 'post' post.id %}">{{post}}</a>
+    
+    
     <br />
     {{post.body|slice:":50"}}
     <br>
@@ -35,9 +43,9 @@
   </div>
   <div>
     {% if request.user.is_authenticated %}
-    <h5>Friends</h5>
-    {% for friend in friends %}
-    <a href="{% url 'profile' friend.id %}">{{friend}}</a>
+    <h5>Followed</h5>
+    {% for follow in followed %}
+    <a href="{% url 'profile' follow.user.id %}">{{follow}}</a>
     <br />
     {% endfor %}
     {% endif %}

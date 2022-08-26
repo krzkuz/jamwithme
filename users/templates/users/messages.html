@@ -1,0 +1,10 @@
+{% extends 'main.html' %}
+{% block content %}
+<h4>Your messages:</h4>
+<br>
+{% for message in users_messages %}
+<a href="{% url 'profile' message.sender.id %}">{{message.sender.first_name}} {{message.sender.last_name}}</a>
+<h4><a href="{% url 'message' message.id %}">{{message.subject}}</a></h4>
+{{message.body|slice:":50"}}
+{% endfor %}
+{% endblock content %}

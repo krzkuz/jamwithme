@@ -1,7 +1,9 @@
 import email
 from django.db.models.signals import post_save, post_delete
 from django.contrib.auth.models import User
-from .models import Profile
+
+from .views import follow
+from .models import Follow, Profile
 
 def create_profile(sender, instance, created, **kwargs):
     if created:
@@ -33,3 +35,12 @@ def delete_user(sender, instance, **kwargs):
         pass
 
 post_delete.connect(delete_user, sender=Profile)
+
+def create_followers(sender, instance, created, **kwargs):
+    if created:
+        user = instance
+        follow = Follow.objects.create(
+            user = user
+        )
+
+post_save.connect(create_followers, sender=Profile)
