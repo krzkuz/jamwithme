@@ -117,19 +117,31 @@ def followers(request, pk):
     }
     return render(request, 'users/followers.html', context)
 
-def users_messages(request):
+def users_messages(request, pk):
     profile = Profile.objects.get(user=request.user)
     follow = Follow.objects.get(user=profile)
     following = profile.follower.all()
     followers = follow.follower.all()
-    conversations = Message.objects.filter(
+    last_conversations = Message.objects.filter(
         Q(sender=request.user.profile) |
         Q(recipient=request.user.profile)
-    )
+    ).filter()
+    #conversations = 
+    # Moze zmiana tu
+    # lub response boolean w modelu
+    if pk == 'None':
+        conversation = Message.objects.all().order_by('-created')
+    else:
+        person = Profile.objects.get(id=pk)
+        conversation = Message.objects.filter(
+            Q(sender=person) |
+            Q(recipient=person)
+        ).order_by('-created')
     context = {
         'following': following,
         'followers': followers,
-        'conversations': conversations,
+        'last_conversations': last_conversations,
+        'conversation': conversation,
     }
     return render(request, 'users/messages.html', context)
 

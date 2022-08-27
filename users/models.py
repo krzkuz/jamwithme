@@ -6,9 +6,6 @@ import uuid
 # Create your models here.
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
-    #friend = models.ManyToManyField("self", blank=True)
-    #followers = models.ManyToManyField("self", blank=True)
-    #following = models.ManyToManyField("self", blank=True)
     first_name = models.CharField(max_length=100, null=True, blank=True)
     last_name = models.CharField(max_length=100, null=True, blank=True)
     email = models.EmailField(max_length=100, null=True, blank=True)
@@ -37,8 +34,6 @@ class Follow(models.Model):
 class Message(models.Model):
     sender = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True, blank=True)
     recipient = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True, blank=True, related_name='messages')
-    # email = models.EmailField(max_length=100, null=True, blank=True)
-    # subject = models.CharField(max_length=200, null=True, blank=True)
     body = models.TextField(null=True, blank=False)
     created = models.DateTimeField(auto_now_add=True)
     id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True, editable=False)

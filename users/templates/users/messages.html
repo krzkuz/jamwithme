@@ -11,17 +11,21 @@
 <div class="home-container">
     <div>
         <h4>Last conversations</h4>
-        {% for conversation in conversations %}
+        {% for conversation in last_conversations %}
         {% if conversation.sender == request.user.profile %}
-        <a href="{% url 'profile' conversation.recipient.id %}">{{conversation.recipient.first_name}} {{conversation.recipient.last_name}}</a><hr>
+        <a href="{% url 'messages' conversation.recipient.id %}">{{conversation.recipient.first_name}} {{conversation.recipient.last_name}} {{conversation.body|slice:":50"}}</a><hr>
         {% else %}
-        <a href="{% url 'profile' conversation.sender.id %}">{{conversation.sender.first_name}} {{conversation.sender.last_name}}</a><hr>
+        <a href="{% url 'messages' conversation.sender.id %}">{{conversation.sender.first_name}} {{conversation.sender.last_name}} {{conversation.body|slice:":50"}}</a><hr>
         {% endif %}
         {% endfor %}
     </div>
-
+        
     <div>
-
+        <h3>Conversation</h3>
+        {% for message in conversation %}
+        {{message.body}}
+        <hr>
+        {% endfor %}
     </div>
 
     <div>
