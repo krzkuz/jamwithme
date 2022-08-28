@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import Follow, Instrument, Message, Profile
+from .models import Follow, Instrument, Message, Profile, Conversation
 from posts.models import Post
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
@@ -122,28 +122,68 @@ def users_messages(request, pk):
     follow = Follow.objects.get(user=profile)
     following = profile.follower.all()
     followers = follow.follower.all()
-    last_conversations = Message.objects.filter(
-        Q(sender=request.user.profile) |
-        Q(recipient=request.user.profile)
-    ).filter()
-    #conversations = 
-    # Moze zmiana tu
-    # lub response boolean w modelu
+    user = Profile.objects.filter(user=request.user)
+    conversations = Conversation.objects.filter(participants__in=user)
+    participants = user
+    for obj in conversations:
+        participants = participants | obj.participants.all()
     if pk == 'None':
-        conversation = Message.objects.all().order_by('-created')
+        conversation = None
+        room_messages = None
     else:
-        person = Profile.objects.get(id=pk)
-        conversation = Message.objects.filter(
-            Q(sender=person) |
-            Q(recipient=person)
-        ).order_by('-created')
+        participant = Profile.objects.get(id=pk)
+        conversation, created = Conversation.objects.get_or_create(id=pk)
+        conversation.participants.add(profile, participant)
+        room_messages = conversation.message_set.all()
+
+    form = MessageForm()
+    if request.method == 'POST':
+        form = MessageForm(request.POST)
+        if form.is_valid():
+            message = form.save(commit=False)
+            message.sender = request.user.profile
+            message.conversation = conversation
+            message.save()
+            return redirect('messages', pk)
+
     context = {
         'following': following,
         'followers': followers,
-        'last_conversations': last_conversations,
+        'conversations': conversations,
+        'room_messages': room_messages,
         'conversation': conversation,
+        'participants': participants,
+        'form': form,
     }
     return render(request, 'users/messages.html', context)
+
+# def users_messages(request, pk):
+#     profile = Profile.objects.get(user=request.user)
+#     follow = Follow.objects.get(user=profile)
+#     following = profile.follower.all()
+#     followers = follow.follower.all()
+#     last_conversations = Message.objects.filter(
+#         Q(sender=request.user.profile) |
+#         Q(recipient=request.user.profile)
+#     )
+#     #conversations = 
+#     # Moze zmiana tu
+#     # lub response boolean w modelu
+#     if pk == 'None':
+#         conversation = Message.objects.all().order_by('-created')
+#     else:
+#         person = Profile.objects.get(id=pk)
+#         conversation = Message.objects.filter(
+#             Q(sender=person) |
+#             Q(recipient=person)
+#         ).order_by('-created')
+#     context = {
+#         'following': following,
+#         'followers': followers,
+#         'last_conversations': last_conversations,
+#         'conversation': conversation,
+#     }
+#     return render(request, 'users/messages.html', context)
 
 # def users_messages(request):
 #     users_messages = Message.objects.filter(
@@ -162,18 +202,92 @@ def users_messages(request, pk):
 #     }
 #     return render(request, 'users/message.html', context)
 
-def send_message(request, pk):
-    form = MessageForm()
-    recipient = Profile.objects.get(id=pk)
-    if request.method == 'POST':
-        form = MessageForm(request.POST)
-        if form.is_valid():
-            message = form.save(commit=False)
-            message.sender = request.user.profile
-            message.recipient = recipient
-            message.save()
-            return redirect('profile', pk)
-    context = {
-        'form': form,
-    }
-    return render(request, 'users/message_form.html', context)
+# def send_message(request, pk):
+#     form = MessageForm()
+#     recipient = Profile.objects.get(id=pk)
+#     if request.method == 'POST':
+#         form = MessageForm(request.POST)
+#         if form.is_valid():
+#             message = form.save(commit=False)
+#             message.sender = request.user.profile
+#             message.recipient = recipient
+#             message.save()
+#             return redirect('profile', pk)
+#     context = {
+#         'form': form,
+#     }
+#     return render(request, 'users/message_form.html', context)
+
+# Dzialajace
+# def users_messages(request, pk):
+#     profile = Profile.objects.get(user=request.user)
+#     follow = Follow.objects.get(user=profile)
+#     following = profile.follower.all()
+#     followers = follow.follower.all()
+#     user = Profile.objects.filter(user=request.user)
+#     conversations = Conversation.objects.filter(participants__in=user)
+
+#     if pk == 'None':
+#         conversation = None
+#         room_messages = None
+#     else:
+#         conversation = Conversation.objects.get(id=pk)
+#         room_messages = conversation.message_set.all()
+
+#     form = MessageForm()
+#     if request.method == 'POST':
+#         form = MessageForm(request.POST)
+#         if form.is_valid():
+#             message = form.save(commit=False)
+#             message.sender = request.user.profile
+#             message.conversation = conversation
+#             message.save()
+#             return redirect('messages', pk)
+
+#     context = {
+#         'following': following,
+#         'followers': followers,
+#         'conversations': conversations,
+#         'room_messages': room_messages,
+#         'conversation': conversation,
+#         'form': form,
+#     }
+#     return render(request, 'users/messages.html', context)
+
+
+# def users_messages(request, pk):
+#     profile = Profile.objects.get(user=request.user)
+#     follow = Follow.objects.get(user=profile)
+#     following = profile.follower.all()
+#     followers = follow.follower.all()
+#     user = Profile.objects.filter(user=request.user)
+#     conversations = Conversation.objects.filter(participants__in=user)
+
+#     if pk == 'None':
+#         conversation = None
+#         room_messages = None
+#     else:
+#         participant = Profile.objects.get(id=pk)
+#         conversation, created = Conversation.objects.get_or_create(id=pk)
+#         conversation.participants.add(profile, participant)
+#         room_messages = conversation.message_set.all()
+
+#     form = MessageForm()
+#     if request.method == 'POST':
+#         form = MessageForm(request.POST)
+#         if form.is_valid():
+#             message = form.save(commit=False)
+#             message.sender = request.user.profile
+#             message.conversation = conversation
+#             message.save()
+#             return redirect('messages', pk)
+
+#     context = {
+#         'following': following,
+#         'followers': followers,
+#         'conversations': conversations,
+#         'room_messages': room_messages,
+#         'conversation': conversation,
+#         'form': form,
+#     }
+#     return render(request, 'users/messages.html', context)

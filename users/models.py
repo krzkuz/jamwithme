@@ -1,3 +1,4 @@
+from asyncio.windows_events import NULL
 import email
 from django.db import models
 from django.contrib.auth.models import User
@@ -31,9 +32,59 @@ class Follow(models.Model):
         return str(self.user)
 
 
+
+class Conversation(models.Model):
+    participants = models.ManyToManyField(Profile, blank=True)
+    name = models.CharField(max_length=250, blank=True, null=True, default='noname')
+    created = models.DateTimeField(auto_now_add=True)
+    id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True, editable=False)
+
+    # @property
+    # def name(self):
+    #     if self.name == 'noname':
+    #         new_name = ''
+    #         query_set = self.participants.all()
+    #         for participant in query_set:
+    #             new_name = new_name + participant.first_name + ' ' + participant.last_name + ','           
+    #     return new_name
+        # @property
+        # def change_name(self):
+        # if self.name == 'noname':
+        #     new_name = ''
+        #     query_set = self.participants.all()
+        #     for participant in query_set:
+        #         new_name = new_name + participant.first_name + ' ' + participant.last_name + ','           
+        # return new_name
+    # @property
+    # def name(self):
+    #     if self.name == 'noname':
+    #         self.name = ''
+    #         query_set = self.participants.all()
+    #         for participant in query_set:
+    #             self.name = self.name + participant.first_name + ' ' + participant.last_name + ','           
+    #     return self.name
+
+    
+
+        # try:
+        #     conversation_name = 'exp'
+        # except:
+        #     conversation_name != 'noname'
+        # return conversation_name
+        # if name == 'NULL':
+        #     #name = self.participants.all()
+        #     name = '++++++++++++++++++++'
+        # else:
+        #     name = self.name+'qwe'
+
+    def __str__(self):
+        return str(self.name)
+
+
 class Message(models.Model):
     sender = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True, blank=True)
-    recipient = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True, blank=True, related_name='messages')
+    # recipient = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True, blank=True, related_name='messages')
+    conversation = models.ForeignKey(Conversation, on_delete=models.SET_NULL, null=True, blank=True)
     body = models.TextField(null=True, blank=False)
     created = models.DateTimeField(auto_now_add=True)
     id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True, editable=False)
@@ -42,7 +93,7 @@ class Message(models.Model):
         return self.body[:30]
     
     class Meta:
-        ordering = ['-created']
+        ordering = ['created']
 
 
 class Instrument(models.Model):

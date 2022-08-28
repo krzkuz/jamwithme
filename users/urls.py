@@ -13,5 +13,5 @@ urlpatterns = [
     path('followers/<str:pk>', views.followers, name='followers'),
     path('messages/<str:pk>', views.users_messages, name='messages'),
     # path('message/<str:pk>', views.message, name='message'),
-    path('send-message/<str:pk>', views.send_message, name='send_message'),
+    # path('send-message/<str:pk>', views.send_message, name='send_message'),
 ]

@@ -46,9 +46,6 @@ class Comment(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True, editable=False)
 
-    def __str__(self):
-        return self.body[:30]+'...'
-
     @property
     def get_likes(self):
         likes = self.rate_set.filter(rate='like').count()
@@ -58,6 +55,9 @@ class Comment(models.Model):
     def get_dislikes(self):
         dislikes = self.rate_set.filter(rate='dislike').count()
         return dislikes
+
+    def __str__(self):
+        return self.body[:30]+'...'
 
 
 class Rate(models.Model):
