@@ -137,8 +137,12 @@ def users_messages(request, pk):
     # New message 
     if conversation:    
         form = send_message(request, conversation)
+        #return redirect('messages', pk)
     else:
         form = None
+
+    if not room_messages:
+        conversation.delete()
 
     context = {
         'following': following,

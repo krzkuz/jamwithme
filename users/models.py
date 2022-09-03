@@ -37,7 +37,7 @@ class Conversation(models.Model):
     participants = models.ManyToManyField(Profile, blank=True)
     name = models.CharField(max_length=250, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(null=True, auto_now=True)
+    updated = models.DateTimeField(null=True)
     id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True, editable=False)
     
     def __str__(self):
