@@ -1,3 +1,4 @@
+import uuid
 from django.shortcuts import render, redirect
 from .models import Follow, Instrument, Message, Profile, Conversation
 from posts.models import Post
@@ -6,6 +7,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
 from .forms import MessageForm, ProfileForm, InstrumentForm
 from django.db.models import Q
+from .utils import send_message, create_conversation
 # Create your views here.
 
 def register_user(request):
@@ -87,25 +89,15 @@ def user_skill(request):
 def follow(request, pk):
     user = Profile.objects.get(id=pk)
     follow = Follow.objects.get(user=user)
-    follower = follow.follower.add(request.user.profile)
+    follow.follower.add(request.user.profile)
     # follower = Follow.objects.create(user=user, follower=request.user.profile)
     return redirect('profile', pk)
-
-# def add_friend(request, pk):
-#     friend = Profile.objects.get(id=pk)
-#     request.user.profile.friend.add(friend)
-#     return redirect('profile', pk)
 
 def unfollow(request, pk):
     user = Profile.objects.get(id=pk)
     follow = Follow.objects.get(user=user)
     follower = follow.follower.remove(request.user.profile)
     return redirect('profile', pk)
-
-# def delete_friend(request, pk):
-#     friend = Profile.objects.get(id=pk)
-#     request.user.profile.friend.remove(friend)
-#     return redirect('profile', pk)
 
 def followers(request, pk):
     profile = Profile.objects.get(id=pk)
@@ -123,28 +115,30 @@ def users_messages(request, pk):
     following = profile.follower.all()
     followers = follow.follower.all()
     user = Profile.objects.filter(user=request.user)
-    conversations = Conversation.objects.filter(participants__in=user)
+    conversations = Conversation.objects.filter(participants__in=user).order_by('-updated')
     participants = user
-    for obj in conversations:
-        participants = participants | obj.participants.all()
-    if pk == 'None':
-        conversation = None
-        room_messages = None
-    else:
-        participant = Profile.objects.get(id=pk)
-        conversation, created = Conversation.objects.get_or_create(id=pk)
-        conversation.participants.add(profile, participant)
-        room_messages = conversation.message_set.all()
+    all_messages = Message.objects.none()
 
-    form = MessageForm()
-    if request.method == 'POST':
-        form = MessageForm(request.POST)
-        if form.is_valid():
-            message = form.save(commit=False)
-            message.sender = request.user.profile
-            message.conversation = conversation
-            message.save()
-            return redirect('messages', pk)
+    # getting queryset of all conversations participants and messages
+    for conversation in conversations:
+        participants = participants | conversation.participants.all()
+        all_messages = all_messages | conversation.message_set.all()
+    if pk == 'None':
+        try:
+            last_message = all_messages.last()
+            conversation = last_message.conversation
+            room_messages = conversation.message_set.all()
+        except:
+            conversation = None
+            room_messages = None
+    else:
+        conversation, room_messages = create_conversation(request, profile, pk)        
+
+    # New message 
+    if conversation:    
+        form = send_message(request, conversation)
+    else:
+        form = None
 
     context = {
         'following': following,
@@ -262,7 +256,9 @@ def users_messages(request, pk):
 #     followers = follow.follower.all()
 #     user = Profile.objects.filter(user=request.user)
 #     conversations = Conversation.objects.filter(participants__in=user)
-
+#     participants = user
+#     for obj in conversations:
+#         participants = participants | obj.participants.all()
 #     if pk == 'None':
 #         conversation = None
 #         room_messages = None
@@ -288,6 +284,65 @@ def users_messages(request, pk):
 #         'conversations': conversations,
 #         'room_messages': room_messages,
 #         'conversation': conversation,
+#         'participants': participants,
+#         'form': form,
+#     }
+#     return render(request, 'users/messages.html', context)
+
+# Nie dzialajace
+
+# def users_messages(request, pk):
+#     profile = Profile.objects.get(user=request.user)
+#     follow = Follow.objects.get(user=profile)
+#     following = profile.follower.all()
+#     followers = follow.follower.all()
+#     user = Profile.objects.filter(user=request.user)
+#     conversations = Conversation.objects.filter(participants__in=user)
+#     participants = user
+#     all_messages = Message.objects.none()
+
+#     # getting queryset of all conversations participants and messages
+#     for conversation in conversations:
+#         participants = participants | conversation.participants.all()
+#         all_messages = all_messages | conversation.message_set.all()
+#     if pk == 'None':
+#         try:
+#             last_message = all_messages.last()
+#             conversation = last_message.conversation
+#             room_messages = conversation.message_set.all()
+#         except:
+#             conversation = None
+#             room_messages = None
+#     else:
+#         participant = Profile.objects.get(id=pk)
+#         conversation, created = Conversation.objects.get_or_create(id=pk)
+#         if created:
+#             conversation.id
+#         conversation.participants.add(profile, participant)
+#         room_messages = conversation.message_set.all()
+#         conversation.name = ''
+#         i = 1
+#         for participant in conversation.participants.all():
+#             conversation.name += str(participant.first_name)
+#             if i < conversation.participants.all().count():
+#                 conversation.name += ', '
+#                 i += 1
+
+#         conversation.save()
+
+#     # New message 
+#     if conversation:    
+#         form = send_message(request, conversation)
+#     else:
+#         form = None
+
+#     context = {
+#         'following': following,
+#         'followers': followers,
+#         'conversations': conversations,
+#         'room_messages': room_messages,
+#         'conversation': conversation,
+#         'participants': participants,
 #         'form': form,
 #     }
 #     return render(request, 'users/messages.html', context)

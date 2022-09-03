@@ -3,7 +3,7 @@ from django.db.models.signals import post_save, post_delete
 from django.contrib.auth.models import User
 
 from .views import follow
-from .models import Follow, Profile
+from .models import Follow, Message, Profile, Conversation
 
 def create_profile(sender, instance, created, **kwargs):
     if created:
@@ -44,3 +44,11 @@ def create_followers(sender, instance, created, **kwargs):
         )
 
 post_save.connect(create_followers, sender=Profile)
+
+def update_conversation(sender, instance, created, **kwargs):
+    if created == False:
+        message = instance
+        conversation = message.conversation
+        conversation.save()
+
+post_save.connect(update_conversation, sender=Message)
