@@ -1,7 +1,0 @@
-{% extends 'main.html' %}
-{% block content %}
-<a href="{{ request.META.HTTP_REFERER }}">Go back</a><br>
-<a href="{% url 'profile' message.sender.id %}">{{message.sender.first_name}} {{message.sender.last_name}}</a>
-<h4>{{message.subject}}</h4>
-<p>{{message.body}}</p>
-{% endblock content %}

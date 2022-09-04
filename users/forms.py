@@ -1,6 +1,6 @@
 #from django.contrib.auth.forms
 from django.forms import ModelForm
-from .models import Profile, Instrument, Message
+from .models import Profile, Instrument
 
 
 class ProfileForm(ModelForm):
@@ -15,7 +15,3 @@ class InstrumentForm(ModelForm):
         fields = ['name', 'level']
 
 
-class MessageForm(ModelForm):
-    class Meta:
-        model = Message
-        fields = ['body']
