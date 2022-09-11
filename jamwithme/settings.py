@@ -31,6 +31,8 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'channels',
+    
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -40,7 +42,8 @@ INSTALLED_APPS = [
 
     'posts.apps.PostsConfig',
     'users.apps.UsersConfig',
-    'chat'
+    'chat',
+    
 ]
 
 MIDDLEWARE = [
@@ -73,6 +76,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "jamwithme.wsgi.application"
 
+ASGI_APPLICATION = 'jamwithme.routing.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
@@ -127,3 +131,4 @@ MEDIA_ROOT = BASE_DIR/'static/images/'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+

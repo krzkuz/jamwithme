@@ -29,6 +29,22 @@ class Post(models.Model):
         dislikes = self.rate_set.filter(rate='dislike').count()
         return dislikes
 
+    @property
+    def image_url(self):
+        try: 
+            url = self.picture.url
+        except:
+            url = ''
+        return url
+
+    @property
+    def video_url(self):
+        try: 
+            url = self.record.url
+        except:
+            url = ''
+        return url
+
 
 class Tag(models.Model):
     name = models.CharField(max_length=100, null=True, blank=True)

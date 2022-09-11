@@ -3,6 +3,6 @@
 <h5>{{profile.first_name}} {{profile.last_name}} followers:</h5>
 {% for follower in followers %}
 <p><a href="{% url 'profile' follower.id %}">{{follower.first_name}} {{follower.last_name}} 
-    <img style="max-width: 80px;" src="{{follower.profile_image.url}}"></a></p>
+    <img class="image-fluid rounded" style="max-width: 80px;" src="{{follower.image_url}}"></a></p>
 {% endfor %}
 {% endblock content %}

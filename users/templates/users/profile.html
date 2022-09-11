@@ -1,51 +1,81 @@
 {% extends 'main.html' %} {% block content %}
-<h3>profile template</h3>
-<img style="max-width: 80px;" src="{{profile.profile_image.url}}">
-<br>
-{{profile.first_name}} {{profile.last_name}}
-<br>
-{{profile.location}}
-<br>
-{{profile.bio}}
-<br>
-{% if profile.social_youtube %}
-<a href="{{profile.social_youtube}}">Youtube</a>
-<br>
-{% endif %}
-<br><br><br>
-{% if request.user.profile.id == profile.id %}
-<a href="{% url 'skill' %}">Add your skills</a>
-{% endif %}
-<br><br><br>
-{% if request.user.profile.id != profile.id %}
-<h5><a href="{% url 'messages' profile.id %}">Send message</a></h5>
-{% endif %}
-{{followers.count}} <a href="{% url 'followers' profile.id %}">follower{{followers.count|pluralize:"s"}}</a>
-{% if request.user.profile.id == profile.id %}
-{% else %}
+<section class="bg-dark text-light p-5 text-center text-sm-start" >
+  <div class="container-fluid">
+    <div class="row justify-content-center">
+      <div class="col-md-12 col-lg-3">
+        <div>
+        <img class="image-fluid rounded" style="max-width: 80px" src="{{profile.image_url}}" />
+        <br />
+        {{profile.first_name}} {{profile.last_name}}
+        <br />
+        {{profile.location}}
+        <br />
+        {{profile.bio}}
+        <br />
+        {% if profile.social_youtube %}
+        <a href="{{profile.social_youtube}}" class="btn btn-outline-secondary">Youtube</a>
+        <br />
+        {% endif %}
+        <br />
+        {% if request.user.profile.id != profile.id %}
+        <h5><a href="{% url 'messages' profile.id %}">Send message</a></h5>
+        {% endif %} 
+        
+        <a href="{% url 'followers' profile.id %}" class="btn btn-outline-secondary">
+            {{followers.count}} Follower{{followers.count|pluralize:"s"}}
+        </a>
+            <br /><br /><br />
+        {% if request.user.profile.id == profile.id %} 
+        {% elif request.user.profile in followers %}
+        <a href="{% url 'unfollow' profile.id %}" class="btn btn-outline-secondary">Unfollow</a>
+        {% else %}
+        <a href="{% url 'follow' profile.id %}" class="btn btn-outline-secondary">Follow</a>
+        {% endif %} 
+        <h3>Skills:</h3>
+        {% for skill in skills %} {{skill.name}} {{skill.level}}
+        <br />
+        {% endfor %}
+        {% if request.user.profile.id == profile.id %}
+            <a href="{% url 'skill' %}" class="btn btn-outline-secondary">Add your skills</a>
+        {% endif %}
+        </div>
+      </div>
 
-{% if request.user.profile in followers %}
-<a href="{% url 'unfollow' profile.id %}">Unfollow</a>
-{% else %}
-<a href="{% url 'follow' profile.id %}">Follow</a>
-{% endif %}
-{% endif %}
-<h3>Skills:</h3>
-{% for skill in skills %}
-{{skill.name}}
-{{skill.level}}
-<br>
-{% endfor %}
-<br><br>
-{% for post in posts %}
-{{post.author.first_name}} {{post.author.last_name}}<br>
-<a href="{% url 'post' post.id %}">{{post.subject}}</a>
-{% if request.user == post.author.user %}
-<a href="{% url 'update-post' post.id %}">Update</a>
-<a href="{% url 'delete-post' post.id %}">Delete</a>
-{% endif %}
-<br>
-{{post.body}}<br>
-{{post.tag}}<br>
-{% endfor %}
+      <div class="col-md-12 col-lg-9">
+        <div>
+            {% for post in posts %}
+            <div class="border border-secondary rounded bg-secondary">
+                <div class="d-flex justify-content-end">
+                    {% if request.user == post.author.user %}
+                    <a href="{% url 'update-post' post.id %}" class="btn btn-outline-light">Update</a>
+                    <a href="{% url 'delete-post' post.id %}" class="btn btn-outline-light">Delete</a>
+                    {% endif %}
+                </div>
+                <div class="p-3">
+                    <img class="image-fluid rounded" style="max-width: 20px" src="{{profile.image_url}}" />
+                    {{post.author.first_name}}
+                    {{post.author.last_name}}
+                    <a href="{% url 'post' post.id %}" class="link-dark h5 text-decoration-none p-3">{{post.subject}}</a>
+                </div>
+                <br>
+                <p class="p-3">{{post.body}}</p>
+                
+                {% if post.image_url %}
+                <img class="image-fluid" style="max-width: 100%" src="{{post.picture.url}}" />
+                {% endif %}
+                {% if post.video_url %}
+                <video class="embed-responsive embed-responsive-16by9" controls="controls" style="max-width: 100%">
+                    <source src="{{post.video_url}}" type="video/mp4">
+                </video>
+                {% endif %}
+                <br />
+                {{post.tag}}<br />
+            </div>
+            <br>
+            {% endfor %}            
+        </div>
+    </div>
+  </div>
+  </div>
+</section>
 {% endblock content %}

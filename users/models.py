@@ -21,6 +21,14 @@ class Profile(models.Model):
     def __str__(self):
         return self.user.username
 
+    @property
+    def image_url(self):
+        try: 
+            url = self.profile_image.url
+        except:
+            url = ''
+        return url
+
 
 class Follow(models.Model):
     user = models.OneToOneField(Profile, on_delete=models.CASCADE, null=True, blank=False)
