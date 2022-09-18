@@ -5,15 +5,15 @@ from posts.models import Post
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
-from .forms import ProfileForm, InstrumentForm
+from .forms import ProfileForm, InstrumentForm, RegisterUserForm
 from django.db.models import Q
 
 # Create your views here.
 
 def register_user(request):
-    form = UserCreationForm()
+    form = RegisterUserForm()
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = RegisterUserForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
             user.save()
@@ -62,7 +62,7 @@ def user_settings(request):
     profile = Profile.objects.get(user=request.user)
     form = ProfileForm(instance=profile)
     if request.method == 'POST':
-        form = ProfileForm(request.POST, instance=profile)
+        form = ProfileForm(request.POST, request.FILES, instance=profile)
         if form.is_valid():
             form.save()
             return redirect('profile', request.user.profile.id)

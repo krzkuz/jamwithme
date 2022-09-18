@@ -1,9 +1,15 @@
 {% extends 'main.html' %}
 {% block content %}
-<a href="{{ request.META.HTTP_REFERER }}">Go back</a>
-<form method="POST">
-    {% csrf_token %}
-    {{form.as_p}}
-    <input type="submit" value="Submit">
-</form>
+<section class="bg-dark text-light p-5 text-center text-sm-start" style="height: 100vh;">
+    <a class="btn btn-outline-light" href="{{ request.META.HTTP_REFERER }}">Go back</a>
+    <div class="container-fluid d-flex justify-content-center">
+        <form method="POST">
+            {% csrf_token %}
+            {% for field in form %}
+            {{field}}<br>
+            {% endfor %}
+            <input class="btn btn-secondary" type="submit" value="Submit">
+        </form>
+    </div>
+</section>
 {% endblock content %}

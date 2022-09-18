@@ -40,6 +40,8 @@ def users_messages(request, pk):
             conversation.delete()
         except:
             pass
+    # function to display avatar only on last written message by the user
+    # avatar = conversation_avatar(request, conversation)
 
     context = {
         'following': following,
@@ -48,6 +50,7 @@ def users_messages(request, pk):
         'room_messages': room_messages,
         'conversation': conversation,
         'participants': participants,
+        # 'avatar': avatar,
         'form': form,
     }
     return render(request, 'chat/messages.html', context)

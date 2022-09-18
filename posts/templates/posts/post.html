@@ -1,33 +1,50 @@
 {% extends 'main.html' %} {% block content %}
-<h3>post template</h3>
-
-<a href="{% url 'profile' post.author.id %}">{{post.author}}</a>
-{% if request.user == post.author.user %}
-<a href="{% url 'update-post' post.id %}">Update</a>
-<a href="{% url 'delete-post' post.id %}">Delete</a>
-{% endif %}
-<br>
-{{post.subject}}<br>
-{% if post.picture %}
-<img src="{{post.image_url}}"><br>
-{% endif %}
-{% if post.record %}
-<audio controls>
-    <source src="{{post.record.url}}">
-  </audio>
-{% endif %}
-{{post.body}}<br><br><br><br>
-<!-- ratings -->
-{{post.get_likes}} like{{post.get_likes|pluralize:"s"}} --------- {{post.get_dislikes}} dislike{{post.get_dislikes|pluralize:"s"}}<br>
-{% for tag in tags %}
-{{tag}}<br>
-{% endfor %}
-<br><br><br><br>
-{% for comment in comments %}
-<a href="{% url 'profile' comment.author.id %}">{{comment.author}}</a><br>
-{{comment.body}}<br><br>
-{{comment.get_likes}} like{{comment.get_likes|pluralize:"s"}} --------- {{comment.get_dislikes}} dislike{{comment.get_dislikes|pluralize:"s"}}<br>
-{% endfor %}
-
+<section class="bg-dark text-light p-5 text-center text-sm-start" >
+  <div class="container-fluid">
+    <div class="border border-secondary rounded bg-secondary">
+      <div class="d-flex justify-content-center">
+        <div class="border border-secondary rounded bg-secondary">
+          <div class="d-flex justify-content-end">
+              {% if request.user == post.author.user %}
+              <a href="{% url 'update-post' post.id %}" class="btn btn-outline-light">Update</a>
+              <a href="{% url 'delete-post' post.id %}" class="btn btn-outline-light">Delete</a>
+              {% endif %}
+          </div>
+          <div class="p-3">
+              <img class="image-fluid rounded" style="max-width: 20px" src="{{profile.image_url}}" />
+              {{post.author.first_name}}
+              {{post.author.last_name}}
+              <a href="{% url 'post' post.id %}" class="link-dark h5 text-decoration-none p-3">{{post.subject}}</a>
+          </div>
+          <br>
+          <p class="p-3">{{post.body}}</p>
+          
+          {% if post.image_url %}
+          <img class="image-fluid" style="max-width: 100%" src="{{post.picture.url}}" />
+          {% endif %}
+          {% if post.video_url %}
+          <div class="container-fluid">
+            <video class="embed-responsive embed-responsive-16by9" controls="controls" style="max-width: 100%">
+              <source src="{{post.video_url}}" type="video/mp4">
+          </video>
+          </div>
+          
+          {% endif %}
+          <br />
+          {{post.tag}}<br />
+          {{post.get_likes}} like{{post.get_likes|pluralize:"s"}} --------- {{post.get_dislikes}} dislike{{post.get_dislikes|pluralize:"s"}}<br>
+          {% for tag in tags %}
+          {{tag}}<br>
+          {% endfor %}
+          <br><br><br><br>
+          {% for comment in comments %}
+          <a href="{% url 'profile' comment.author.id %}">{{comment.author}}</a><br>
+          {{comment.body}}<br><br>
+          {{comment.get_likes}} like{{comment.get_likes|pluralize:"s"}} --------- {{comment.get_dislikes}} dislike{{comment.get_dislikes|pluralize:"s"}}<br>
+          {% endfor %}
+      </div>
+      </div>
+    </div>
+  </div>
+</section>
 {% endblock content %}
-

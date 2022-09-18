@@ -1,5 +1,6 @@
 from .forms import MessageForm
-from .models import Profile, Conversation
+from .models import Conversation, Message
+from users.models import Profile
 from django.shortcuts import render, redirect
 
 def send_message(request, conversation): 
@@ -31,3 +32,16 @@ def create_conversation(request, profile, pk):
             i += 1
     conversation.save()
     return conversation, room_messages
+
+# def conversation_avatar(request, conversation):
+#     # room_messages = conversation.message_set.all()
+#     last_messages = conversation.message_set.all().order_by('-created')[0:2]
+#     if last_messages[0].sender == last_messages[1].sender:
+#         return False
+#     else:
+#         return True
+    # for message in room_messages:
+    #     if message[-1].sender == message 
+    #         return True
+    #     else:
+    #         return False

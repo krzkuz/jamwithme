@@ -3,13 +3,11 @@
 <section class="bg-dark text-light p-5 text-center text-sm-start">
     <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-outline-light">Go back</a>
     <div class="container-fluid d-flex justify-content-center">
-        <form method="POST">
+        <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         {% for field in form %}
-        <div class="mb-3">
-        <label class="form-label">{{field.label}}</label><br>
         {{field}}
-        </div>
+        <br>
         {% endfor %}
         <button type="submit" class="btn btn-secondary">Save</button>
         </form>

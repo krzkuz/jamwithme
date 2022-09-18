@@ -18,7 +18,7 @@
         {% endif %}
         <br />
         {% if request.user.profile.id != profile.id %}
-        <h5><a href="{% url 'messages' profile.id %}">Send message</a></h5>
+        <h5><a class="btn btn-outline-secondary" href="{% url 'messages' profile.id %}">Send message</a></h5>
         {% endif %} 
         
         <a href="{% url 'followers' profile.id %}" class="btn btn-outline-secondary">
