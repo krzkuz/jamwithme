@@ -50,11 +50,13 @@ def profile(request, pk):
     skills = Instrument.objects.filter(player=profile)
     follow = Follow.objects.get(user=profile)
     followers = follow.follower.all()
+    following = Follow.objects.filter(follower=profile)
     context = {
         'profile': profile,
         'posts': posts,
         'skills': skills,
         'followers': followers,
+        'following': following,
     }
     return render(request, 'users/profile.html', context)
 
@@ -96,7 +98,7 @@ def follow(request, pk):
 def unfollow(request, pk):
     user = Profile.objects.get(id=pk)
     follow = Follow.objects.get(user=user)
-    follower = follow.follower.remove(request.user.profile)
+    follow.follower.remove(request.user.profile)
     return redirect('profile', pk)
 
 def followers(request, pk):
@@ -109,6 +111,16 @@ def followers(request, pk):
     }
     return render(request, 'users/followers.html', context)
 
+def following(request, pk):
+    profile = Profile.objects.get(id=pk)
+    # following = profile.follow.follower.all()
+    following = Follow.objects.filter(follower=profile)
+    print(following,'++++++')
+    context = {
+        'profile': profile,
+        'following': following,
+    }
+    return render(request, 'users/following.html', context)
 
 
 # def users_messages(request, pk):

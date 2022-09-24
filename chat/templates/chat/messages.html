@@ -1,4 +1,7 @@
 {% extends 'main.html' %}
+{% block title %}
+Messages
+{% endblock title %}
 {% block content %}
   <section class="bg-dark text-light p-5 text-center text-sm-start">
     <div class="container-fluid">
@@ -44,11 +47,14 @@
                 <p>Start a conversation by searching a user to type with--></p>
                 {% else %}
                 <br>
-                <form action="{% url 'messages' 'None' %}" method="POST">
+                <form action="{% url 'messages' 'None' %}" method="POST" id="form-id">
                     {% csrf_token %}
                     {{form.body}}
                     <!-- <input type="submit" hidden="true" /> -->
                     <input type="submit" value="Send message">
+                    <!-- <button id="submit" onclick="Alert()">Send</button> -->
+                    <!-- <input type="submit" onclick="HandleSubmission(); return false;" value="Button to Press"> -->
+                    
                 </form>
                 {% endif %}            
             </div>

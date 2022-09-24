@@ -1,6 +1,9 @@
 {% extends 'main.html' %}
+{% block title %}
+Post
+{% endblock title %}
 {% block content %}
-<section class="bg-dark text-light p-5 text-center text-sm-start" style="height: 100vh;">
+<section class="bg-dark text-light p-5 text-center text-sm-start">
     <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-outline-light">Go back</a>
     <div class="container-fluid d-flex justify-content-center">
         <form method="POST" enctype="multipart/form-data">

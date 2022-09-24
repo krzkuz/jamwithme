@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 
 from users.models import Follow, Profile
-from .models import Post, Tag, Comment, Rate
+from .models import Post, Tag, Comment
 from .forms import PostForm
 from django.db.models import Q
 # Create your views here.
@@ -10,13 +10,17 @@ def post(request, pk):
     post = Post.objects.get(id=pk)
     tags = post.tags.all()
     comments = Comment.objects.filter(post=post)
-    post_rates = Rate.objects.filter(post=post)
+    likes = post.likes.all()
+    dislikes = post.dislikes.all()
+    # post_rates = Rate.objects.filter(post=post)
     # comment_rates = Rate.objects.filter()
     context = {
         'post': post,
         'tags': tags,
         'comments': comments,
-        'post_rates': post_rates,
+        'likes': likes,
+        'dislikes': dislikes,
+        # 'post_rates': post_rates,
     }
     return render(request, 'posts/post.html', context)
 
@@ -89,3 +93,43 @@ def delete_post(request, pk):
         'post': post
     }
     return render(request, 'posts/delete_post.html', context)
+
+def like_post(request, pk):
+    post = Post.objects.get(id=pk)
+    if request.user.profile in post.dislikes.all():
+        post.dislikes.remove(request.user.profile)
+    if request.user.profile in post.likes.all():
+        post.likes.remove(request.user.profile)
+    else:
+        post.likes.add(request.user.profile)
+    return redirect('post', pk)
+
+def dislike_post(request, pk):
+    post = Post.objects.get(id=pk)
+    if request.user.profile in post.likes.all():
+        post.likes.remove(request.user.profile)
+    if request.user.profile in post.dislikes.all():
+        post.dislikes.remove(request.user.profile)
+    else:
+        post.dislikes.add(request.user.profile)
+    return redirect('post', pk)
+
+def like_comment(request, pk):
+    comment = Comment.objects.get(id=pk)
+    if request.user.profile in comment.dislikes.all():
+        comment.dislikes.remove(request.user.profile)
+    if request.user.profile in comment.likes.all():
+        comment.likes.remove(request.user.profile)
+    else:
+        comment.likes.add(request.user.profile)
+    return redirect('post', comment.post.id)
+
+def dislike_comment(request, pk):
+    comment = Comment.objects.get(id=pk)
+    if request.user.profile in comment.likes.all():
+        comment.likes.remove(request.user.profile)
+    if request.user.profile in comment.dislikes.all():
+        comment.dislikes.remove(request.user.profile)
+    else:
+        comment.dislikes.add(request.user.profile)
+    return redirect('post', comment.post.id)

@@ -1,6 +1,6 @@
 {% extends 'main.html' %}
 {% block title %}
-Followers
+Following
 {% endblock title %}
 {% block content %}
 <section class="bg-dark text-light p-5 text-center text-sm-start" style="height: 100vh;">
@@ -11,11 +11,11 @@ Followers
             </div>        
         
             <div class="col-md-12 col-lg-9">
-                <h5>{{profile.first_name}} {{profile.last_name}} followers:</h5>
-                {% for follower in followers %}
+                <h5>{{profile.first_name}} {{profile.last_name}} following:</h5>
+                {% for follow in following %}
                 <div class="row">
-                    <a class="link-secondary h5 text-decoration-none p-3" href="{% url 'profile' follower.id %}">
-                    <img class="image-fluid rounded" style="max-width: 80px;" src="{{follower.image_url}}">{{follower.first_name}} {{follower.last_name}}</a>
+                    <a class="link-secondary h5 text-decoration-none p-3" href="{% url 'profile' follow.id %}">
+                    <img class="image-fluid rounded" style="max-width: 80px;" src="{{follow.user.image_url}}">{{follow.user.first_name}} {{follow.user.last_name}}</a>
                 </div>        
                 {% endfor %}
             </div>
