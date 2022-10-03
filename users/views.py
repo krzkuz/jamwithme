@@ -122,6 +122,22 @@ def following(request, pk):
     }
     return render(request, 'users/following.html', context)
 
+def profiles(request):
+    search = request.GET.get('q')
+    if search:
+        profiles = Profile.objects.distinct().filter(
+            Q(first_name__icontains=search) |
+            Q(last_name__icontains=search)
+        )
+    else:
+        profiles = Profile.objects.all()
+    page = ''
+    
+    context = {
+        'profiles': profiles,
+        'page': page,
+    }
+    return render(request, 'users/profiles.html', context)
 
 # def users_messages(request, pk):
 #     profile = Profile.objects.get(user=request.user)

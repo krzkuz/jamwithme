@@ -1,0 +1,25 @@
+{% extends 'main.html' %}
+{% block title %}
+Profiles
+{% endblock title %}
+{% block content %}
+<section class="bg-dark text-light p-5 text-center text-sm-start" style="min-height: 100vh;">
+    <div class="container-fluid">
+        <div class="row justify-content-center"> 
+             
+            <!-- for message search -->
+            <form action="{% url 'profiles' %}">
+                <input type="text" placeholder="Search for user..." name="q">
+            </form>   
+                <!--for profile search  -->
+                {% for profile in profiles %}
+                <div class="row container-fluid rounded border border-secondary rounded">
+                    <a class="link-secondary h5 text-decoration-none p-3" href="{% url 'profile' profile.id %}">
+                    <img class="image-fluid rounded" style="max-width: 80px;" src="{{profile.image_url}}">{{profile.first_name}} {{profile.last_name}}</a>
+                    <a class="link-secondary h5 text-decoration-none p-3" href="{% url 'messages' profile.id %}">Send message</a>
+                </div>        
+                {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock content %}

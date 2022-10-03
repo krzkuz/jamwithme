@@ -36,19 +36,21 @@ def posts(request):
     else:
         posts = Post.objects.all()
     tags = Tag.objects.all()
-    # if request.user.is_authenticated:
-    #     friends = request.user.profile.friend.all()
-    # else:
-    #     friends = None
+    
+    user_id = request.GET.get('u')
+    if user_id:
+        author = Profile.objects.get(id=user_id)
+        posts = author.post_set.all()
+    
     if request.user.is_authenticated:
         profile = request.user.profile
-        followed = profile.follower.all()
+        following = profile.follower.all()
     else:
-        followed = None
+        following = None
     context = {
         'posts': posts,
         'tags': tags,
-        'followed': followed,
+        'following': following,
     }
     return render(request, 'posts/posts.html', context)
 

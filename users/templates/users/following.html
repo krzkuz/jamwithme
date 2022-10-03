@@ -14,7 +14,7 @@ Following
                 <h5>{{profile.first_name}} {{profile.last_name}} following:</h5>
                 {% for follow in following %}
                 <div class="row">
-                    <a class="link-secondary h5 text-decoration-none p-3" href="{% url 'profile' follow.id %}">
+                    <a class="link-secondary h5 text-decoration-none p-3" href="{% url 'profile' follow.user.id %}">
                     <img class="image-fluid rounded" style="max-width: 80px;" src="{{follow.user.image_url}}">{{follow.user.first_name}} {{follow.user.last_name}}</a>
                 </div>        
                 {% endfor %}

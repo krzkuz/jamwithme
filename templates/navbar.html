@@ -9,7 +9,7 @@
         <ul class="navbar-nav ms-auto">
             {% if request.user.is_authenticated %}
             <li class="nav-item">
-                <a href="{% url 'logout' %}" class="nav-link">Logout</a>
+                <a href="{% url 'profiles' %}" class="nav-link">Profiles</a>
             </li>
             <li class="nav-item">
                 <a href="{% url 'create-post' %}" class="nav-link">Post</a>
@@ -22,6 +22,9 @@
             </li>
             <li class="nav-item">
                 <a href="{% url 'settings' %}" class="nav-link">Settings</a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'logout' %}" class="nav-link">Logout</a>
             </li>
             {% else %}
             <li class="nav-item">
