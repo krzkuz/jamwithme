@@ -2,15 +2,15 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('profile/<str:pk>/', views.profile, name='profile'),
+    path('profile/<uuid:pk>/', views.profile, name='profile'),
     path('register/', views.register_user, name='register'),
     path('login/', views.login_user, name='login'),
     path('logout/', views.logout_user, name='logout'),
     path('settings/', views.user_settings, name='settings'),
     path('skill/', views.user_skill, name='skill'),
-    path('follow/<str:pk>', views.follow, name='follow'),
-    path('unfollow/<str:pk>', views.unfollow, name='unfollow'),
-    path('followers/<str:pk>', views.followers, name='followers'),
-    path('following/<str:pk>', views.following, name='following'),
+    path('follow/<uuid:pk>', views.follow, name='follow'),
+    path('unfollow/<uuid:pk>', views.unfollow, name='unfollow'),
+    path('followers/<uuid:pk>', views.followers, name='followers'),
+    path('following/<uuid:pk>', views.following, name='following'),
     path('profiles/', views.profiles, name='profiles')
 ]

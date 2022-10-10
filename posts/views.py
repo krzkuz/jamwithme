@@ -1,13 +1,14 @@
 from django.shortcuts import render, redirect
-
+from django.shortcuts import get_object_or_404
 from users.models import Follow, Profile
 from .models import Post, Tag, Comment
 from .forms import PostForm
 from django.db.models import Q
-# Create your views here.
+from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
 
 def post(request, pk):
-    post = Post.objects.get(id=pk)
+    post = Post.objects.get(id=pk)####
     tags = post.tags.all()
     comments = Comment.objects.filter(post=post)
     likes = post.likes.all()
@@ -47,6 +48,7 @@ def posts(request):
         following = profile.follower.all()
     else:
         following = None
+    
     context = {
         'posts': posts,
         'tags': tags,
@@ -89,22 +91,40 @@ def update_post(request, pk):
 def delete_post(request, pk):
     post = Post.objects.get(id=pk)
     if request.method == 'POST':
-        post.delete()
+        post.delete() 
         return redirect('posts')
     context = {
         'post': post
     }
     return render(request, 'posts/delete_post.html', context)
 
-def like_post(request, pk):
-    post = Post.objects.get(id=pk)
-    if request.user.profile in post.dislikes.all():
-        post.dislikes.remove(request.user.profile)
-    if request.user.profile in post.likes.all():
-        post.likes.remove(request.user.profile)
-    else:
-        post.likes.add(request.user.profile)
-    return redirect('post', pk)
+@login_required
+def like_post(request):
+    if request.POST.get('action') == 'post':
+        id = request.POST.get('postid')
+        post = get_object_or_404(Post, id=id)
+        if request.user.profile in post.dislikes.all():
+            post.dislikes.remove(request.user.profile)
+        if request.user.profile in post.likes.all():
+            post.likes.remove(request.user.profile)
+            # liked = False
+        else:
+            post.likes.add(request.user.profile)
+            # liked = True
+        result = post.likes.all().count()
+
+        return JsonResponse({
+            'result': result,
+            # 'liked': liked,
+         })
+    # post = Post.objects.get(id=pk)
+    # if request.user.profile in post.dislikes.all():
+    #     post.dislikes.remove(request.user.profile)
+    # if request.user.profile in post.likes.all():
+    #     post.likes.remove(request.user.profile)
+    # else:
+    #     post.likes.add(request.user.profile)
+    # return redirect('post', pk)
 
 def dislike_post(request, pk):
     post = Post.objects.get(id=pk)
