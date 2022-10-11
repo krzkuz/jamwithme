@@ -1,0 +1,24 @@
+{% extends 'main.html' %}
+{% block title %}
+Register
+{% endblock title %}
+{% block content %}
+<section class="bg-dark text-light p-5 text-center text-sm-start" style="height: 100vh;">
+    <div class="container-fluid d-flex justify-content-center">
+        <form method="POST" action="">
+            {% csrf_token %}
+            {% for field in form %}
+            {{field}}<br>
+            {% endfor %}
+            <!-- {{form.as_p}} -->
+            <input class="btn btn-outline-light" type="submit" value="Register">
+        </form>
+    </div>
+    <div class="" style="text-align: center;">
+        <p>Already have an account?</p>
+        <a class="btn btn-secondary" href="{% url 'login' %}">Login</a>
+    </div>
+    
+</section>
+{% endblock content %}
+

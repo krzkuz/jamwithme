@@ -1,0 +1,25 @@
+{% extends 'main.html' %}
+{% block title %}
+Followers
+{% endblock title %}
+{% block content %}
+<section class="bg-dark text-light p-5 text-center text-sm-start" style="height: 100vh;">
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-md-12 col-lg-3">
+                <h5>Search for followers:</h5>
+            </div>        
+        
+            <div class="col-md-12 col-lg-9">
+                <h5>{{profile.first_name}} {{profile.last_name}} followers:</h5>
+                {% for follower in followers %}
+                <div class="row">
+                    <a class="link-secondary h5 text-decoration-none p-3" href="{% url 'profile' follower.id %}">
+                    <img class="image-fluid rounded" style="max-width: 80px;" src="{{follower.image_url}}">{{follower.first_name}} {{follower.last_name}}</a>
+                </div>        
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock content %}

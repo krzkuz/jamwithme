@@ -1,0 +1,77 @@
+{% extends 'main.html' %} 
+
+{% block title %}
+Jam With Me
+{% endblock title %}
+
+{% block content %}
+<section class="bg-dark text-light p-5 text-center text-sm-start" style="min-height: 100vh;">
+  <div class="container-fluid">
+    <div class="d-flex justify-content-center">
+      <form action="{% url 'posts' %}">
+        <input class="form-control" type="text" placeholder="Search for posts..." name="q">
+      </form>    
+      <br>
+    </div>
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-2">
+          <h5>Search by instrument</h5>
+          <a href="{% url 'posts' %}?q= " class="link-secondary h5 text-decoration-none p-3"># All</a><br><br>
+          {% for tag in tags %}
+          <a href="{% url 'posts' %}?q={{tag}}" class="link-secondary h5 text-decoration-none p-3"># {{tag}}</a>
+          <br><br>
+          {% endfor %}
+        </div>
+
+        <div class="col-md-12 col-lg-8">
+          <h5>Latest activities</h5>
+            {% for post in posts %}
+              <div class="border border-secondary rounded bg-secondary">
+                  <div class="d-flex justify-content-end">
+                      {% if request.user == post.author.user %}
+                      <a href="{% url 'update-post' post.id %}" class="btn btn-outline-light">Update</a>
+                      <a href="{% url 'delete-post' post.id %}" class="btn btn-outline-light">Delete</a>
+                      {% endif %}
+                  </div>
+                  <div class="p-3">
+                      <a href="{% url 'profile' post.author.id %}" class="link-dark h5 text-decoration-none p-3">
+                        <img class="image-fluid rounded" style="max-width: 20px" src="{{post.author.image_url}}" />
+                        {{post.author.first_name}} {{post.author.last_name}}</a>
+                      <a href="{% url 'post' post.id %}" class="link-dark h5 text-decoration-none p-3">{{post.subject}}</a>
+                  </div>
+                  <br>
+                  <p class="p-3">{{post.body}}</p>
+                  
+                  {% if post.image_url %}
+                  <img class="image-fluid" style="max-width: 100%" src="{{post.picture.url}}" />
+                  {% endif %}
+                  {% if post.video_url %}
+                  <video class="embed-responsive embed-responsive-16by9" controls="controls" style="max-width: 100%">
+                      <source src="{{post.video_url}}" type="video/mp4">
+                  </video>
+                  {% endif %}
+                  <br />
+                  {{post.tag}}<br />
+              </div>
+              <br>
+              {% endfor %}         
+        </div>
+
+        <div class="col-md-12 col-lg-2">
+          {% if request.user.is_authenticated %}
+          <h5>Following</h5>
+          {% for follow in following %}
+          <div>
+            <!-- <a href="{% url 'profile' follow.user.id %}" class="link-secondary h5 text-decoration-none p-3"> -->
+              <a href="{% url 'posts' %}?u={{follow.user.id}}" class="link-secondary h5 text-decoration-none p-3">
+              <img class="image-fluid rounded" style="max-width: 20px" src="{{follow.user.image_url}}" />{{follow.user.first_name}} {{follow.user.last_name}}</a>
+          </div>
+          <!-- <a href="{% url 'posts' %}?q={{tag}}" class="link-secondary h5 text-decoration-none p-3"># {{tag}}</a> -->
+          {% endfor %}
+          {% endif %}
+        </div>
+      </div>
+  </div>
+  {% include 'pagination.html' with queryset=posts custom_range=custom_range search_query=search_query %}
+</section>
+{% endblock content %}

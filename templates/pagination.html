@@ -1,0 +1,19 @@
+{% if queryset.has_other_pages %}    
+    <div class="d-flex justify-content-center">
+        {% if queryset.has_previous %}
+        <a href="?search_query={{search_query}}&page={{queryset.previous_page_number}}" class="btn btn-outline-light">Prev</a></li>
+        {% endif %}
+        {% for page in custom_range %}
+        {% if page == queryset.number %}
+        <a href="?search_query={{search_query}}&page={{page}}" class="btn btn-light">{{page}}</a></li>
+        {% else %}
+        <a href="?search_query={{search_query}}&page={{page}}" class="btn btn-outline-light">{{page}}</a></li>
+        {% endif %}
+        {% endfor %}
+        {% if queryset.has_next %}
+        <a href="?search_query={{search_query}}&page={{queryset.next_page_number}}" class="btn btn-outline-light">Next</a></li>
+        {% endif %}
+    </div>    
+{% endif %}
+
+    
