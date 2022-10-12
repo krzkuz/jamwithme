@@ -24,11 +24,11 @@ Messages
             
     
             <div class="col-md-12 col-lg-8">
-                <h3>
+                <h4>
                     {% if conversation_name %}
-                        {{conversation_name}}
+                    {{conversation_name}}
                     {% endif %}
-                </h3>
+                </h4>
                 <!-- style="background-color: #515861;" -->
                 <div class="row container-fluid rounded border border-secondary rounded">
                 <!-- {% for message in room_messages %}     
@@ -84,7 +84,7 @@ Messages
     
             <div class="col-md-12 col-lg-2">
                 <form action="{% url 'profiles' %}">
-                    <input type="text" placeholder="Search for user..." name="q">
+                    <input class="form-control" type="text" placeholder="Search for user..." name="q">
                 </form> 
                 <h4>Suggested</h4>
                 {% for follow in following %}

@@ -127,12 +127,13 @@ def following(request, pk):
     return render(request, 'users/following.html', context)
 
 def profiles(request):
-    # profile = request.user.profile
-    # following = Follow.objects.filter(follower=profile)
-    # following_profiles = []
-    # for follow in following:
-    #     following_profiles += follow.user
-    # print(following_profiles, '-----------')
+    profile = request.user.profile
+    following = Follow.objects.filter(follower=profile)
+    following_profiles = [] 
+
+    for follow in following:
+        following_profiles.append(follow.user)
+    
     search = request.GET.get('q')
     if search:
         profiles = Profile.objects.distinct().filter(
@@ -149,7 +150,7 @@ def profiles(request):
         'profiles': profiles,
         'page': page,
         'custom_range': custom_range,
-        # 'following_profiles': following_profiles,
+        'following_profiles': following_profiles,
     }
     return render(request, 'users/profiles.html', context)
 

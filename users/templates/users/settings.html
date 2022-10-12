@@ -2,12 +2,13 @@
 Settings
 {% endblock title %}
 {% block content %}
-<section class="bg-dark text-light p-5 text-center text-sm-start">
+<section class="bg-dark text-light p-5 text-center text-sm-start" style="min-height: 100vh;">
     <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-outline-light">Go back</a>
     <div class="container-fluid d-flex justify-content-center">
         <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         {% for field in form %}
+        <label class="form-label">{{field.label}}</label><br>
         {{field}}
         <br>
         {% endfor %}

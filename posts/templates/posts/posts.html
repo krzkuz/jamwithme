@@ -9,7 +9,7 @@ Jam With Me
   <div class="container-fluid">
     <div class="d-flex justify-content-center">
       <form action="{% url 'posts' %}">
-        <input class="form-control" type="text" placeholder="Search for posts..." name="q">
+        <input class="form-control" style="width: 500px;" type="text" placeholder="Search for posts..." name="q">
       </form>    
       <br>
     </div>
@@ -18,7 +18,7 @@ Jam With Me
           <h5>Search by instrument</h5>
           <a href="{% url 'posts' %}?q= " class="link-secondary h5 text-decoration-none p-3"># All</a><br><br>
           {% for tag in tags %}
-          <a href="{% url 'posts' %}?q={{tag}}" class="link-secondary h5 text-decoration-none p-3"># {{tag}}</a>
+          <a href="{% url 'posts' %}?q={{tag}}" class="link-secondary h5 text-decoration-none p-3"># {{tag}} {{tag.post_set.all.count}}</a>
           <br><br>
           {% endfor %}
         </div>
@@ -66,6 +66,7 @@ Jam With Me
               <a href="{% url 'posts' %}?u={{follow.user.id}}" class="link-secondary h5 text-decoration-none p-3">
               <img class="image-fluid rounded" style="max-width: 20px" src="{{follow.user.image_url}}" />{{follow.user.first_name}} {{follow.user.last_name}}</a>
           </div>
+          <br>
           <!-- <a href="{% url 'posts' %}?q={{tag}}" class="link-secondary h5 text-decoration-none p-3"># {{tag}}</a> -->
           {% endfor %}
           {% endif %}

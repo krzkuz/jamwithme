@@ -6,35 +6,38 @@
 <section class="bg-dark text-light p-5 text-center text-sm-start" >
   <div class="container-fluid">
     <div class="border border-secondary rounded bg-secondary">
+      <div class="d-flex justify-content-end">
+        {% if request.user == post.author.user %}
+        <a href="{% url 'update-post' post.id %}" class="btn btn-outline-light">Update</a>
+        <a href="{% url 'delete-post' post.id %}" class="btn btn-outline-light">Delete</a>
+        {% endif %}
+      </div>
       <div class="d-flex justify-content-center">
         <div class="border border-secondary rounded bg-secondary">
-          <div class="d-flex justify-content-end">
-              {% if request.user == post.author.user %}
-              <a href="{% url 'update-post' post.id %}" class="btn btn-outline-light">Update</a>
-              <a href="{% url 'delete-post' post.id %}" class="btn btn-outline-light">Delete</a>
-              {% endif %}
-          </div>
-          <div class="p-3">
+          <div class="d-flex p-3">
               <a href="{% url 'profile' post.author.id %}" class="link-dark h5 text-decoration-none p-3">
-                <img class="rounded-circle shadow-1-strong me-3" style="max-width: 40px" src="{{post.author.image_url}}" />
+                <img class="rounded-circle shadow-1-strong me-3" style="max-width: 40px" src="{{post.author.image_url}}"/>
                 {{post.author.first_name}} {{post.author.last_name}}</a>
               {{post.subject}}
           </div>
           <br>
           <p class="p-3">{{post.body}}</p>
-          
-          {% if post.image_url %}
-          <img class="image-fluid" style="max-width: 100%" src="{{post.picture.url}}" />
-          {% endif %}
-          {% if post.video_url %}
-          <div class="container-fluid">
-            <video class="embed-responsive embed-responsive-16by9" controls="controls" style="max-width: 100%">
-              <source src="{{post.video_url}}" type="video/mp4">
-          </video>
+          <div class="d-flex justify-content-center container-fluid">
+            {% if post.image_url %}
+            <div class="">
+              <img class="image-fluid" style="max-width: 100%" src="{{post.picture.url}}" />
+            </div>              
+            {% endif %}
+            {% if post.video_url %}
+              <div class="container-fluid">
+                <video class="embed-responsive embed-responsive-16by9" controls="controls" style="max-width: 100%">
+                  <source src="{{post.video_url}}" type="video/mp4">
+              </video>
+              </div><br>          
+            {% endif %}
           </div>
           
-          {% endif %}
-          <div class="d-flex">
+          <div class="">
             <div class="" style="float: left; width: 85%;">
               {% for tag in tags %}
               
@@ -44,9 +47,7 @@
               {% endfor %}
             </div>
             <!-- like dislike -->
-            <div class="" style="float: right; width: 15%;">
-              {% csrf_token %} 
-              
+            <div class="d-flex justify-content-end">          
               <!-- like post -->
               <button class="btn btn-link text-dark p-0 border-0 btn-outline-light text-decoration-none" id="like-post" value="{{post.id}}">
                 <span class="" id="like-count">{{likes.count}}</span>
@@ -144,11 +145,12 @@
           </div>
           {% endfor %}
           {% include 'pagination.html' with queryset=comments custom_range=custom_range %}
-          <div class="new-comment">
+          <br>
+          <div class="d-flex justify-content-center">
             <form method="POST">
               {% csrf_token %}
               <textarea type="text" name="comment" class="form-control" style="height: 140px; width: 700px;" placeholder="Type your comment here..."></textarea><br>
-              <button type="submit" class="btn btn-outline-dark" id="comment-submit">Add comment</button>
+              <button type="submit" class="btn btn-outline-dark" id="comment-submit" style="float: right;">Add comment</button>
             </form>      
           </div>
       </div>

@@ -22,6 +22,7 @@ def post(request, pk):
             post=post,
             body=request.POST.get('comment')
             )
+        return redirect('post', pk)
         # comment.save()
 
     # post_rates = Rate.objects.filter(post=post)
@@ -50,7 +51,13 @@ def posts(request):
     else:
         posts = Post.objects.all()
     tags = Tag.objects.all()
-    
+
+    tag_dict = {}
+    for tag_search in tags:
+        tag_dict[tag_search.name] = tag_search.post_set.all().count()
+    # tag_dict.order_by()
+    print(tag_dict, '++++++')
+
     user_id = request.GET.get('u')
     if user_id:
         author = Profile.objects.get(id=user_id)
@@ -69,6 +76,7 @@ def posts(request):
         'tags': tags,
         'following': following,
         'custom_range': custom_range,
+        'tag_dict': tag_dict,
     }
     return render(request, 'posts/posts.html', context)
 
@@ -96,13 +104,24 @@ def create_post(request):
 def update_post(request, pk):
     post = Post.objects.get(id=pk)
     form = PostForm(instance=post)
+    tags = post.tags.all()
+    str_tags = ''
+    for tag in tags:
+        str_tags += str(tag.name) + ' '
     if request.method == 'POST':
         form = PostForm(request.POST, request.FILES, instance=post)
         if form.is_valid():
-            form.save()
-            return redirect('posts')
+            get_tags = request.POST.get('tags').replace(',', ' ').split()
+            post = form.save(commit=False)
+            post.save()
+            tags.delete()
+            for tag in get_tags:
+                tag, created = Tag.objects.get_or_create(name=tag.lower().capitalize())
+                post.tags.add(tag)            
+            return redirect('post', pk)
     context = {
-        'form': form
+        'form': form,
+        'tags': str_tags,
     }
     return render(request, 'posts/create_post.html', context)
 
@@ -244,3 +263,7 @@ def dislike_comment(request, pk):
     else:
         comment.dislikes.add(request.user.profile)
     return redirect('post', comment.post.id)
+
+# @login_required(login_url="login")
+# def delete_comment(request, pk):
+#     comment = Comment.objects.get(id=pk)
