@@ -21,16 +21,16 @@ class Profile(models.Model):
     class Meta:
         ordering = ['last_name', 'first_name']
 
-    def __str__(self):
-        return self.user.username
-
     @property
     def image_url(self):
         try: 
             url = self.profile_image.url
         except:
             url = ''
-        return url
+        return url    
+    
+    def __str__(self):
+        return self.user.username
 
 
 class Follow(models.Model):

@@ -1,12 +1,11 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import Message, Conversation
 from users.models import Profile, Follow
 from .utils import create_conversation, create_conversation_name
 from django.contrib.auth.decorators import login_required
 
 @login_required(login_url="login")
-def users_messages(request, room_name):
-    # profiles = Profile.objects.all()
+def users_messages(request, pk):
     profile = Profile.objects.get(user=request.user)
     follow = Follow.objects.get(user=profile)
     following = profile.follower.all()
@@ -15,13 +14,12 @@ def users_messages(request, room_name):
     conversations = Conversation.objects.filter(participants__in=user).order_by('updated')
     participants = user
     all_messages = Message.objects.none()
-    # variable to choose template 'profiles' funcionality
-    page = 'message'
+
     # getting queryset of all conversations participants and messages
     for conversation in conversations:
         participants = participants | conversation.participants.all()
         all_messages = all_messages | conversation.message_set.all()
-    if room_name == 'None':
+    if pk == 'None':
         try:
             last_message = all_messages.last()
             conversation = last_message.conversation
@@ -29,21 +27,23 @@ def users_messages(request, room_name):
         except:
             conversation = None
             room_messages = None
+    elif Conversation.objects.filter(id=pk).exists():
+        conversation = Conversation.objects.get(id=pk)
+        room_messages = conversation.message_set.all() 
     else:
-        conversation, room_messages = create_conversation(request, profile, room_name)        
+        conversation, room_messages = create_conversation(request, pk)  ###   
+        return redirect('messages', conversation.id)       
 
     try:
-        conversation_name = create_conversation_name(request, conversation)
+        conversation_name = create_conversation_name(conversation)
     except:
         conversation_name = None
 
-    
-    # New message 
-    # if conversation:    
-    #     form = send_message(request, conversation)
-    #     #return redirect('messages', pk)
-    # else:
-    #     form = None
+    # try:
+    #         conversation, room_messages = create_conversation(request, profile, pk)  ###   
+    #     except:
+    #         conversation = Conversation.objects.get(id=pk)
+    #         room_messages = conversation.message_set.all() 
 
     # if not room_messages:
     #     try:
@@ -61,8 +61,6 @@ def users_messages(request, room_name):
         'conversation': conversation,
         'participants': participants,
         'conversation_name': conversation_name,
-        'page': page,
-        # 'profiles': profiles,
         # 'avatar': avatar,
     }
     return render(request, 'chat/messages.html', context)

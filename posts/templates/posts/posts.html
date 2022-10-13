@@ -9,16 +9,16 @@ Jam With Me
   <div class="container-fluid">
     <div class="d-flex justify-content-center">
       <form action="{% url 'posts' %}">
-        <input class="form-control" style="width: 500px;" type="text" placeholder="Search for posts..." name="q">
+        <input id="searchForm" class="form-control" style="width: 500px;" type="text" placeholder="Search for posts..." name="q">
       </form>    
       <br>
     </div>
       <div class="row justify-content-center">
         <div class="col-md-12 col-lg-2">
-          <h5>Search by instrument</h5>
+          <h5>Popular tags</h5>
           <a href="{% url 'posts' %}?q= " class="link-secondary h5 text-decoration-none p-3"># All</a><br><br>
-          {% for tag in tags %}
-          <a href="{% url 'posts' %}?q={{tag}}" class="link-secondary h5 text-decoration-none p-3"># {{tag}} {{tag.post_set.all.count}}</a>
+          {% for key, value in popular_tags.items %}
+          <a id="searchForm" href="{% url 'posts' %}?q={{key}}" class="link-secondary h5 text-decoration-none p-3"># {{key}} {{value}}</a>
           <br><br>
           {% endfor %}
         </div>

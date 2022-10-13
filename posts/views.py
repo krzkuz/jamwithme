@@ -23,7 +23,6 @@ def post(request, pk):
             body=request.POST.get('comment')
             )
         return redirect('post', pk)
-        # comment.save()
 
     # post_rates = Rate.objects.filter(post=post)
     # comment_rates = Rate.objects.filter()
@@ -40,33 +39,40 @@ def post(request, pk):
     return render(request, 'posts/post.html', context)
 
 def posts(request):
-    tag = request.GET.get('q')
-    if tag:
-        tags_filtered = Tag.objects.filter(name=tag)
+    search = request.GET.get('q')
+    if search:
+        tags_filtered = Tag.objects.filter(name=search)
         posts = Post.objects.distinct().filter(
-            Q(body__icontains=tag) |
-            Q(subject__icontains=tag) |
+            Q(author__first_name__icontains=search) |
+            Q(author__last_name__icontains=search) |
+            Q(body__icontains=search) |
+            Q(subject__icontains=search) |
             Q(tags__in=tags_filtered)
         )
     else:
         posts = Post.objects.all()
     tags = Tag.objects.all()
 
-    tag_dict = {}
-    for tag_search in tags:
-        tag_dict[tag_search.name] = tag_search.post_set.all().count()
-    # tag_dict.order_by()
-    print(tag_dict, '++++++')
+    if search == None:
+        search=''
 
+    # following user posts
     user_id = request.GET.get('u')
     if user_id:
         author = Profile.objects.get(id=user_id)
         posts = author.post_set.all()
+
+    popular_tags = {}
+    for tag in tags:
+        popular_tags[tag.name] = tag.post_set.all().count()
+    popular_tags = sorted(popular_tags.items(), key=lambda x: x[1], reverse=True)
+    popular_tags = dict(popular_tags)
+    # popular_tags = popular_tags[:10] 
     
     if request.user.is_authenticated:
         profile = request.user.profile
         following = profile.follower.all()
-    else:
+    else: 
         following = None
     
     custom_range, posts = paginate_posts(request, posts, 1)
@@ -76,7 +82,8 @@ def posts(request):
         'tags': tags,
         'following': following,
         'custom_range': custom_range,
-        'tag_dict': tag_dict,
+        'popular_tags': popular_tags,
+        'search': search,
     }
     return render(request, 'posts/posts.html', context)
 

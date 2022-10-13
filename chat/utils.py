@@ -1,23 +1,28 @@
-from .forms import MessageForm
-from .models import Conversation, Message
+from .models import Conversation
 from users.models import Profile
-from django.shortcuts import render, redirect
+from django.db.models import Q
 
-# def send_message(request, conversation): 
-#     form = MessageForm()     
-#     if request.method == 'POST':
-#         form = MessageForm(request.POST)
-#         if form.is_valid():
-#             message = form.save(commit=False)
-#             message.sender = request.user.profile
-#             message.conversation = conversation
-#             message.save()  
-#     form = MessageForm()               
-#         #return redirect('messages', pk)
-#     return form
-
-def create_conversation(request, profile, pk):
+def create_conversation(request, pk):
     participant = Profile.objects.get(id=pk)
+    try:
+        conversation = Conversation.objects.filter(
+            Q(participants__in=participant) &
+            Q(participants__in=request.user.profile)
+            )
+    except:
+        conversation = Conversation.objects.create()
+        conversation.participants.add(request.user.profile, participant)
+        room_messages = None
+
+    # conversation name for database and chat functionality
+    conversation.name = ''
+    for participant in conversation.participants.all():
+        conversation.name += str(participant.first_name)
+    conversation.save()
+    return conversation, room_messages
+
+'''
+participant = Profile.objects.get(id=pk)
     conversation, created = Conversation.objects.get_or_create(id=pk)
     # if created:
     #     conversation.id = uuid.uuid4
@@ -29,10 +34,11 @@ def create_conversation(request, profile, pk):
     for participant in conversation.participants.all():
         conversation.name += str(participant.first_name)
     conversation.save()
+    conversation.save()
     return conversation, room_messages
-
-# conversation name for display
-def create_conversation_name(request, conversation):
+'''
+# conversation name to display
+def create_conversation_name(conversation):
     conversation_name = ''
     i = 1
     for participant in conversation.participants.all():
@@ -41,6 +47,7 @@ def create_conversation_name(request, conversation):
             conversation_name += ', '
             i += 1
     return conversation_name
+
 # def conversation_avatar(request, conversation):
 #     # room_messages = conversation.message_set.all()
 #     last_messages = conversation.message_set.all().order_by('-created')[0:2]

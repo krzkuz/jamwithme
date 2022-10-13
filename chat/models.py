@@ -11,6 +11,9 @@ class Conversation(models.Model):
     
     def __str__(self):
         return str(self.name)
+    
+    class Meta:
+        ordering = ['-updated']
 
 
 class Message(models.Model):
