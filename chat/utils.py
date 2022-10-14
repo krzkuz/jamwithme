@@ -1,42 +1,31 @@
 from .models import Conversation
 from users.models import Profile
-from django.db.models import Q
 
 def create_conversation(request, pk):
     participant = Profile.objects.get(id=pk)
+    profile = Profile.objects.get(id=request.user.profile.id)
+    # get all participant conversations
+    conversations = participant.conversation_set.all()
+    for obj in conversations:
+        if profile in obj.participants.all():
+            conversation = obj
     try:
-        conversation = Conversation.objects.filter(
-            Q(participants__in=participant) &
-            Q(participants__in=request.user.profile)
-            )
+        conversation
+        room_messages = conversation.message_set.all()
     except:
         conversation = Conversation.objects.create()
         conversation.participants.add(request.user.profile, participant)
+        conversation.save()
+        # conversation name for database and chat functionality    
+        conversation.name = str(conversation.id).replace('-', '')
+        for participant in conversation.participants.all():
+            conversation.name += str(participant.first_name)
+        conversation.save()
         room_messages = None
-
-    # conversation name for database and chat functionality
-    conversation.name = ''
-    for participant in conversation.participants.all():
-        conversation.name += str(participant.first_name)
-    conversation.save()
+    print(conversation)
+    
     return conversation, room_messages
 
-'''
-participant = Profile.objects.get(id=pk)
-    conversation, created = Conversation.objects.get_or_create(id=pk)
-    # if created:
-    #     conversation.id = uuid.uuid4
-    conversation.participants.add(profile, participant)
-    room_messages = conversation.message_set.all()
-
-    # conversation name for database and chat funcionality
-    conversation.name = ''
-    for participant in conversation.participants.all():
-        conversation.name += str(participant.first_name)
-    conversation.save()
-    conversation.save()
-    return conversation, room_messages
-'''
 # conversation name to display
 def create_conversation_name(conversation):
     conversation_name = ''

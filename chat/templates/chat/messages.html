@@ -4,128 +4,128 @@ Messages
 {% endblock title %}
 {% load static %}
 {% block content %}
-  <section class="bg-dark text-light p-5 text-center text-sm-start" style="min-height: 100vh;">
-    <div class="container-fluid">
-        <div class="row justify-content-center">
-            <div class="col-md-12 col-lg-2">
-                <h4>Last conversations</h4>
-                {% for conversation in conversations %}
-                    <a href="{% url 'messages' conversation.id %}" class="link-secondary h5 text-decoration-none p-3">
-                    {% for participant in conversation.participants.all %}
-                        {% if request.user.profile == participant %}
-                        {% else %}
-                            <img class="image-fluid rounded" style="max-width: 20px" src="{{participant.image_url}}" />{{participant.first_name}} {{participant.last_name}} 
-                        {% endif %}
-                    {% endfor %}
-                    </a>
-                    <br><br>
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-2">
+            <h4>Last conversations</h4>
+            {% for conversation in conversations %}
+                <a href="{% url 'messages' conversation.id %}" class="link-secondary h5 text-decoration-none p-3">
+                {% for participant in conversation.participants.all %}
+                    {% if request.user.profile == participant %}
+                    {% else %}
+                        <img class="image-fluid rounded" style="max-width: 20px" src="{{participant.image_url}}" />{{participant.first_name}} {{participant.last_name}} 
+                    {% endif %}
                 {% endfor %}
+                </a>
+                <br><br>
+            {% endfor %}
+        </div>
+        
+
+        <div class="col-md-12 col-lg-8">
+            <h4>
+                {% if conversation_name %}
+                {{conversation_name}}
+                {% endif %}
+            </h4>
+            <!-- style="background-color: #515861;" -->
+            <div class="row container-fluid rounded border border-secondary rounded">
+            <!-- {% for message in room_messages %}     
+                {% if message.sender.user == request.user %}   
+                    <div class="d-flex flex-row justify-content-start">
+                        <img class="image-fluid rounded" style="max-width: 30px;" src="{{message.sender.image_url}}">&nbsp       
+                        <p class="small p-2 ms-3 mb-1 rounded-3" style="background-color: #32363a;">{{message.body}}</p>
+                    </div>
+                {% else %}
+                    <div class="d-flex flex-row justify-content-end mb-4 pt-1">
+                        <p class="small p-2 me-3 mb-1 text-white rounded-3" style="background-color: #1e4266;">{{message.body}}</p>&nbsp
+                        <img class="image-fluid rounded" style="max-width: 30px;" src="{{message.sender.image_url}}">                            
+                    </div>
+                {% endif %}
+            {% endfor %} -->
+            <div class="container">
+                <div id="chat-log">
+                {% for message in room_messages %}     
+                    {% if message.sender.user == request.user %}   
+                        <div class="message receiver">{{message.body}}</div><br>                           
+                    {% else %}
+                    
+                    <div class="container">
+                        <div class=""><a href="{% url 'profile' message.sender.id %}"><img class="rounded" style="max-width: 30px; float: right;" src="{{message.sender.image_url}}"></a></div>
+                        <div class="message sender" style="float: right;">{{message.body}}</div><br><br>
+                    </div>          
+                    {% endif %}
+                {% endfor %}
+                </div>
+            </div>
+            <!-- <textarea id="chat-log" cols="100" rows="20">
+                {% for message in room_messages %}  
+                {{message.body}}
+                {% endfor %}
+            </textarea><br> -->
+            </div>
+            <div class="container">
+                <input id="chat-message-input" class="form-control" type="text" size="100"><br>
+                <input id="chat-message-submit" type="button" value="Send">
             </div>
             
-    
-            <div class="col-md-12 col-lg-8">
-                <h4>
-                    {% if conversation_name %}
-                    {{conversation_name}}
-                    {% endif %}
-                </h4>
-                <!-- style="background-color: #515861;" -->
-                <div class="row container-fluid rounded border border-secondary rounded">
-                <!-- {% for message in room_messages %}     
-                    {% if message.sender.user == request.user %}   
-                        <div class="d-flex flex-row justify-content-start">
-                            <img class="image-fluid rounded" style="max-width: 30px;" src="{{message.sender.image_url}}">&nbsp       
-                            <p class="small p-2 ms-3 mb-1 rounded-3" style="background-color: #32363a;">{{message.body}}</p>
-                        </div>
-                    {% else %}
-                        <div class="d-flex flex-row justify-content-end mb-4 pt-1">
-                            <p class="small p-2 me-3 mb-1 text-white rounded-3" style="background-color: #1e4266;">{{message.body}}</p>&nbsp
-                            <img class="image-fluid rounded" style="max-width: 30px;" src="{{message.sender.image_url}}">                            
-                        </div>
-                    {% endif %}
-                {% endfor %} -->
-                <div class="container">
-                    <div id="chat-log">
-                    {% for message in room_messages %}     
-                        {% if message.sender.user == request.user %}   
-                            <div class="message receiver">{{message.body}}</div><br>                           
-                        {% else %}
-                        
-                        <div class="container">
-                            <div class=""><a href="{% url 'profile' message.sender.id %}"><img class="rounded" style="max-width: 30px; float: right;" src="{{message.sender.image_url}}"></a></div>
-                            <div class="message sender" style="float: right;">{{message.body}}</div><br><br>
-                        </div>          
-                        {% endif %}
-                    {% endfor %}
-                    </div>
-                </div>
-                <!-- <textarea id="chat-log" cols="100" rows="20">
-                    {% for message in room_messages %}  
-                    {{message.body}}
-                    {% endfor %}
-                </textarea><br> -->
-                </div>
-                <div class="container">
-                    <input id="chat-message-input" class="form-control" type="text" size="100"><br>
-                    <input id="chat-message-submit" type="button" value="Send">
-                </div>
-                
-                <!-- {% if form == None %}
-                <p>Start a conversation by searching a user to type with</p>
-                {% else %}
-                <br>
-                <form action="{% url 'messages' 'None' %}" method="POST" id="form-id">
-                    {% csrf_token %}
-                    {{form.body}}
-                    <input type="submit" value="Send message">                    
-                </form>
-                {% endif %}             -->
-            </div>
-    
-            <div class="col-md-12 col-lg-2">
-                <form action="{% url 'profiles' %}">
-                    <input class="form-control" type="text" placeholder="Search for user..." name="q">
-                </form> 
-                <h4>Suggested</h4>
-                {% for follow in following %}
-                {% if follow.user not in followers and follow.user not in participants %}
-                
-                <!-- <a href="{% url 'messages' follow.user.id %}">{{follow.user.first_name}} {{follow.user.last_name}}</a><br> -->
-                <div>
-                    <a href="{% url 'messages' follow.user.id %}" class="link-secondary h5 text-decoration-none p-3">
-                      <img class="image-fluid rounded" style="max-width: 20px" src="{{follow.user.image_url}}" />
-                      {{follow.user.first_name}} {{follow.user.last_name}}</a>
-                </div>
-                <br>
-                {% endif %}
-                {% endfor %}
-        
-                {% for follower in followers %}
-                {% if follower not in participants %}
-                <!-- <a href="{% url 'messages' follower.id %}">{{follower.first_name}} {{follower.last_name}}</a><br> -->
-                <div>
-                    <a href="{% url 'messages' follower.id %}" class="link-secondary h5 text-decoration-none p-3">
-                      <img class="image-fluid rounded" style="max-width: 20px" src="{{follower.image_url}}" />
-                      {{follower.first_name}} {{follower.last_name}}</a>
-                </div>
-                <br>
-                {% endif %}
-                {% endfor %}
-
-                <!-- {% for profile in profiles %}
-                    {% if profile in followers or following or participants %}
-                    {% else %}
-                        <a href="{% url 'messages' profile.id %}" class="link-secondary h5 text-decoration-none p-3">
-                        <img class="image-fluid rounded" style="max-width: 20px" src="{{profile.image_url}}" />
-                        {{profile.first_name}} {{profile.last_name}}xx</a><br>
-                    {% endif %}
-                    
-                {% endfor %} -->
-            </div>
-
+            <!-- {% if form == None %}
+            <p>Start a conversation by searching a user to type with</p>
+            {% else %}
+            <br>
+            <form action="{% url 'messages' 'None' %}" method="POST" id="form-id">
+                {% csrf_token %}
+                {{form.body}}
+                <input type="submit" value="Send message">                    
+            </form>
+            {% endif %}             -->
         </div>
+
+        <div class="col-md-12 col-lg-2">
+            <form action="{% url 'profiles' %}">
+                <input class="form-control" type="text" placeholder="Search for user..." name="q">
+            </form> 
+            <h4>Suggested</h4>
+            {% for follow in following %}
+            {% if follow.user not in followers and follow.user not in participants %}
+            
+            <!-- <a href="{% url 'messages' follow.user.id %}">{{follow.user.first_name}} {{follow.user.last_name}}</a><br> -->
+            <div>
+                <a href="{% url 'messages' follow.user.id %}" class="link-secondary h5 text-decoration-none p-3">
+                    <img class="image-fluid rounded" style="max-width: 20px" src="{{follow.user.image_url}}" />
+                    {{follow.user.first_name}} {{follow.user.last_name}}</a>
+            </div>
+            <br>
+            {% endif %}
+            {% endfor %}
+    
+            {% for follower in followers %}
+            {% if follower not in participants %}
+            <!-- <a href="{% url 'messages' follower.id %}">{{follower.first_name}} {{follower.last_name}}</a><br> -->
+            <div>
+                <a href="{% url 'messages' follower.id %}" class="link-secondary h5 text-decoration-none p-3">
+                    <img class="image-fluid rounded" style="max-width: 20px" src="{{follower.image_url}}" />
+                    {{follower.first_name}} {{follower.last_name}}</a>
+            </div>
+            <br>
+            {% endif %}
+            {% endfor %}
+
+            <!-- {% for profile in profiles %}
+                {% if profile in followers or following or participants %}
+                {% else %}
+                    <a href="{% url 'messages' profile.id %}" class="link-secondary h5 text-decoration-none p-3">
+                    <img class="image-fluid rounded" style="max-width: 20px" src="{{profile.image_url}}" />
+                    {{profile.first_name}} {{profile.last_name}}xx</a><br>
+                {% endif %}
+                
+            {% endfor %} -->
+        </div>
+
     </div>
-  </section>
+</div>
+ 
   {{ conversation.name|json_script:"room-name" }}
   {{ request.user.profile.first_name|json_script:"username" }}
   {{ conversation.id|json_script:"conversationId" }}

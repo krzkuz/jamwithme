@@ -3,19 +3,19 @@
 Login
 {% endblock title %}
 {% block content %}
-<section class="bg-dark text-light p-5 text-center text-sm-start" style="height: 100vh;">
-    <div class="container-fluid d-flex justify-content-center">
-        <form method="POST" action="">
-            {% csrf_token %}
-            <input class="form-control" type="text" placeholder="Enter username..." name="username"><br>
-            <input class="form-control" type="password" placeholder="Enter password..." name="password"><br>
-            <input class="btn btn-outline-light" type="submit" value="Login"><br>
-        </form>
-    </div>
-    <div class="" style="text-align: center;">
-        <p>Dont have an account?</p>
-        <a class="btn btn-outline-light" href="{% url 'register' %}">Sign Up</a>
-    </div>
+
+<div class="container-fluid d-flex justify-content-center">
+    <form method="POST" action="">
+        {% csrf_token %}
+        <input class="form-control" type="text" placeholder="Enter username..." name="username"><br>
+        <input class="form-control" type="password" placeholder="Enter password..." name="password"><br>
+        <input type="hidden" name="next" value="{{ request.GET.next }}">
+        <input class="btn btn-outline-light" type="submit" value="Login"><br>
+    </form>
+</div>
+<div class="" style="text-align: center;">
+    <p>Dont have an account?</p>
+    <a class="btn btn-outline-light" href="{% url 'register' %}">Sign Up</a>
+</div>
         
-</section>
 {% endblock content %}

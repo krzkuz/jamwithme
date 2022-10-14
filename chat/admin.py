@@ -2,7 +2,7 @@ from django.contrib import admin
 from .models import Message, Conversation
 
 class BookAdmin(admin.ModelAdmin):
-    readonly_fields = ('updated',)
+    readonly_fields = ('updated', 'id')
 
 admin.site.register(Conversation, BookAdmin)
 

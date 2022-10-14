@@ -34,6 +34,7 @@ class ChatRoomConsumer(AsyncWebsocketConsumer):
 
         # Find message sender
         sender = await database_sync_to_async(Profile.objects.get)(user=self.scope['user'])
+        
         # Create new message
         new_message = Message(
             sender=sender,
@@ -41,6 +42,7 @@ class ChatRoomConsumer(AsyncWebsocketConsumer):
             conversation=conversation,
         )
         await database_sync_to_async(new_message.save)()
+        await database_sync_to_async(new_message.conversation.save)()
 
         await self.channel_layer.group_send(
             self.room_group_name,

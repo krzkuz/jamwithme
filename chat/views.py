@@ -11,7 +11,7 @@ def users_messages(request, pk):
     following = profile.follower.all()
     followers = follow.follower.all()
     user = Profile.objects.filter(user=request.user)
-    conversations = Conversation.objects.filter(participants__in=user).order_by('updated')
+    conversations = Conversation.objects.filter(participants__in=user).order_by('-updated')
     participants = user
     all_messages = Message.objects.none()
 
@@ -24,6 +24,7 @@ def users_messages(request, pk):
             last_message = all_messages.last()
             conversation = last_message.conversation
             room_messages = conversation.message_set.all()
+            return redirect('messages', conversation.id)
         except:
             conversation = None
             room_messages = None
@@ -32,26 +33,11 @@ def users_messages(request, pk):
         room_messages = conversation.message_set.all() 
     else:
         conversation, room_messages = create_conversation(request, pk)  ###   
-        return redirect('messages', conversation.id)       
-
+        return redirect('messages', conversation.id)
     try:
         conversation_name = create_conversation_name(conversation)
     except:
         conversation_name = None
-
-    # try:
-    #         conversation, room_messages = create_conversation(request, profile, pk)  ###   
-    #     except:
-    #         conversation = Conversation.objects.get(id=pk)
-    #         room_messages = conversation.message_set.all() 
-
-    # if not room_messages:
-    #     try:
-    #         conversation.delete()
-    #     except:
-    #         pass
-    # function to display avatar only on last written message by the user
-    # avatar = conversation_avatar(request, conversation)
 
     context = {
         'following': following,

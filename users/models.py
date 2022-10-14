@@ -30,7 +30,7 @@ class Profile(models.Model):
         return url    
     
     def __str__(self):
-        return self.user.username
+        return str(self.first_name) + ' ' + str(self.last_name)
 
 
 class Follow(models.Model):

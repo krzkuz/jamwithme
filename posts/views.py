@@ -7,6 +7,8 @@ from django.db.models import Q
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from .utils import paginate_comments, paginate_posts
+from django.contrib import messages
+import time
 
 def post(request, pk):
     post = Post.objects.get(id=pk)
@@ -16,13 +18,19 @@ def post(request, pk):
     dislikes = post.dislikes.all()
     custom_range, comments = paginate_comments(request, comments, 5)
 
+    # creating a comment
     if request.method == 'POST':
-        Comment.objects.get_or_create(
-            author=request.user.profile,
-            post=post,
-            body=request.POST.get('comment')
-            )
-        return redirect('post', pk)
+        if request.user.is_authenticated:
+            Comment.objects.get_or_create(
+                author=request.user.profile,
+                post=post,
+                body=request.POST.get('comment')
+                )
+            return redirect('post', pk)
+        else:
+            messages.error(request, 'Login to add a comment')
+            return redirect('login')
+        
 
     # post_rates = Rate.objects.filter(post=post)
     # comment_rates = Rate.objects.filter()
@@ -41,16 +49,22 @@ def post(request, pk):
 def posts(request):
     search = request.GET.get('q')
     if search:
-        tags_filtered = Tag.objects.filter(name=search)
-        posts = Post.objects.distinct().filter(
-            Q(author__first_name__icontains=search) |
-            Q(author__last_name__icontains=search) |
-            Q(body__icontains=search) |
-            Q(subject__icontains=search) |
-            Q(tags__in=tags_filtered)
-        )
+        search_list = str(search).split()
+        tags_filtered = Tag.objects.none()
+        posts = Post.objects.none()
+        for word in search_list:
+            tags_filtered = tags_filtered | Tag.objects.filter(name=word)
+        for word in search_list:
+            posts = posts | Post.objects.distinct().filter(
+                Q(author__first_name__icontains=word) |
+                Q(author__last_name__icontains=word) |
+                Q(body__icontains=word) |
+                Q(subject__icontains=word) |
+                Q(tags__in=tags_filtered)
+            )
     else:
         posts = Post.objects.all()
+    
     tags = Tag.objects.all()
 
     if search == None:
@@ -86,6 +100,56 @@ def posts(request):
         'search': search,
     }
     return render(request, 'posts/posts.html', context)
+
+# def posts(request):
+#     search = request.GET.get('q')
+#     if search:
+#         tags_filtered = Tag.objects.filter(name=search)
+#         posts = Post.objects.distinct().filter(
+#             Q(author__first_name__icontains=search) |
+#             Q(author__last_name__icontains=search) |
+#             Q(body__icontains=search) |
+#             Q(subject__icontains=search) |
+#             Q(tags__in=tags_filtered)
+#         )
+#     else:
+#         posts = Post.objects.all()
+        
+#     tags = Tag.objects.all()
+
+#     if search == None:
+#         search=''
+
+#     # following user posts
+#     user_id = request.GET.get('u')
+#     if user_id:
+#         author = Profile.objects.get(id=user_id)
+#         posts = author.post_set.all()
+
+#     popular_tags = {}
+#     for tag in tags:
+#         popular_tags[tag.name] = tag.post_set.all().count()
+#     popular_tags = sorted(popular_tags.items(), key=lambda x: x[1], reverse=True)
+#     popular_tags = dict(popular_tags)
+#     # popular_tags = popular_tags[:10] 
+    
+#     if request.user.is_authenticated:
+#         profile = request.user.profile
+#         following = profile.follower.all()
+#     else: 
+#         following = None
+    
+#     custom_range, posts = paginate_posts(request, posts, 1)
+
+#     context = {
+#         'posts': posts,
+#         'tags': tags,
+#         'following': following,
+#         'custom_range': custom_range,
+#         'popular_tags': popular_tags,
+#         'search': search,
+#     }
+#     return render(request, 'posts/posts.html', context)
 
 @login_required(login_url="login")
 def create_post(request):
@@ -145,6 +209,9 @@ def delete_post(request, pk):
 
 @login_required(login_url="login")
 def like_post(request):
+    # if not request.user.is_authenticated:
+    #         messages.error(request, 'Login to add rate post')
+    #         return redirect('login')
     if request.POST.get('action') == 'post':
         id = request.POST.get('postid')
         post = get_object_or_404(Post, id=id)

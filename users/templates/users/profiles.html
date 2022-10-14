@@ -3,39 +3,55 @@
 Profiles
 {% endblock title %}
 {% block content %}
-<section class="bg-dark text-light p-5 text-center text-sm-start" style="min-height: 100vh;">
-    <div class="container-fluid">
-        <div class="justify-content-center">              
-            <!-- for message search -->
+
+<div class="container-fluid">
+    <div class="row justify-content-center">   
+        <div class="col-md-12 col-lg-2">
+            <a href="{% url 'followers' request.user.profile.id %}" class="btn btn-outline-light">
+                Followers
+            </a>
+            <a href="{% url 'following' request.user.profile.id %}" class="btn btn-outline-light">
+                Following
+            </a>
+        </div>          
+        
+        <div class="col-md-12 col-lg-8">
+            <!--for profile search  -->
             <div class="d-flex justify-content-center">
                 <form action="{% url 'profiles' %}">
                     <input id="searchForm" class="form-control" style="width: 400px;"type="text" placeholder="Search for user..." name="q">
                 </form> 
             </div>
-                <!--for profile search  -->
-                {% for profile in profiles %}
-                <div class="row container-fluid rounded border border-light">
-                    <div class="col d-flex align-items-center">
-                        <a class="link-secondary h5 text-decoration-none p-3" href="{% url 'profile' profile.id %}">
-                        <img class="image-fluid rounded" style="max-width: 80px;" src="{{profile.image_url}}"> {{profile.first_name}} {{profile.last_name}}</a>
-                    </div>
-                    
-                    <div class="col d-flex align-items-center justify-content-end">
-                        {% if profile.id != request.user.profile.id %}
-                        <a class="btn btn-outline-light" href="{% url 'messages' profile.id %}">Send message</a><br>
-                        <a class="btn btn-outline-light" href="">Send jam request</a><br>
-                        {% if profile not in following_profiles %}
-                            <a href="{% url 'follow' profile.id %}" class="btn btn-outline-light">Follow</a><br>
-                        {% else %}
-                            <a href="{% url 'unfollow' profile.id %}" class="btn btn-outline-light">Unollow</a><br>
-                        {% endif %}
-                        {% endif %}
-                    </div> 
-                    <br><br>                   
-                </div>        
-                {% endfor %}
+                
+            {% for profile in profiles %}
+            <div class="row container-fluid rounded border border-light">
+                <div class="col d-flex align-items-center">
+                    <a class="link-secondary h5 text-decoration-none p-3" href="{% url 'profile' profile.id %}">
+                    <img class="image-fluid rounded" style="max-width: 80px;" src="{{profile.image_url}}"> {{profile.first_name}} {{profile.last_name}}</a>
+                </div>
+                
+                <div class="col d-flex align-items-center justify-content-end">
+                    {% if profile.id != request.user.profile.id %}
+                    <a class="btn btn-outline-light" href="{% url 'messages' profile.id %}">Send message</a><br>
+                    <a class="btn btn-outline-light" href="">Send jam request</a><br>
+                    {% if profile not in following_profiles %}
+                        <a href="{% url 'follow' profile.id %}" class="btn btn-outline-light">Follow</a><br>
+                    {% else %}
+                        <a href="{% url 'unfollow' profile.id %}" class="btn btn-outline-light">Unollow</a><br>
+                    {% endif %}
+                    {% endif %}
+                </div> 
+                <br><br>                   
+            </div>        
+            {% endfor %}
         </div>
+
+        <div class="col-md-12 col-lg-2">
+            
+        </div>    
+
     </div>
-    {% include 'pagination.html' with queryset=profiles custom_range=custom_range search_query=search_query %}
-</section>
+</div>
+{% include 'pagination.html' with queryset=profiles custom_range=custom_range search_query=search_query %}
+
 {% endblock content %}

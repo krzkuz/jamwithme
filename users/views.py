@@ -32,13 +32,14 @@ def login_user(request):
         user = authenticate(username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect('posts')
+            next = request.POST.get('next', '/')
+            if next:
+                return redirect(next)
+            else:
+                return redirect('posts')
         else:
             messages.error(request, 'User not found')
-    context = {
-
-    }
-    return render(request, 'users/login.html', context)
+    return render(request, 'users/login.html')
 
 def logout_user(request):
     logout(request)
@@ -105,26 +106,72 @@ def unfollow(request, pk):
     user = Profile.objects.get(id=pk)
     follow = Follow.objects.get(user=user)
     follow.follower.remove(request.user.profile)
-    return redirect('profile', pk)
+    return redirect('following', request.user.profile.id)
 
 def followers(request, pk):
     profile = Profile.objects.get(id=pk)
     follow = Follow.objects.get(user=profile)
-    followers = follow.follower.all()
+    followers_obj = follow.follower.all()
 
+    following_obj = Follow.objects.filter(follower=profile)
+    following = []
+    for obj in following_obj:
+        following.append(obj.user)
+
+    search = request.GET.get('q')
+    if search:
+        search_list = str(search).split()
+        followers = Follow.objects.none()
+        for word in search_list:
+            followers = followers | followers_obj.distinct().filter(
+                Q(first_name__icontains=word) |
+                Q(last_name__icontains=word)  
+            )
+    else:
+        followers = followers_obj
+    
+    custom_range, followers = paginate_profiles(request, followers, 1)
+    page = ''
+
+    if search == None:
+        search=''
+    
     context = {
         'profile': profile,
         'followers': followers,
+        'following': following,
+        'page': page,
+        'custom_range': custom_range,
+        'search': search,
     }
     return render(request, 'users/followers.html', context)
 
 def following(request, pk):
-    profile = Profile.objects.get(id=pk)
-    following = Follow.objects.filter(follower=profile)
-   
+    profile = Profile.objects.get(id=pk)   
+    search = request.GET.get('q')
+    if search:
+        search_list = str(search).split()
+        following = Follow.objects.none()
+        for word in search_list:
+            following = following | Follow.objects.distinct().filter(
+                Q(user__first_name__icontains=word) |
+                Q(user__last_name__icontains=word)
+            )
+    else:
+        following = Follow.objects.filter(follower=profile)
+    
+    custom_range, following = paginate_profiles(request, following, 1)
+    page = ''
+
+    if search == None:
+        search=''
+
     context = {
         'profile': profile,
         'following': following,
+        'page': page,
+        'custom_range': custom_range,
+        'search': search,
     }
     return render(request, 'users/following.html', context)
 
@@ -138,16 +185,22 @@ def profiles(request):
     
     search = request.GET.get('q')
     if search:
-        profiles = Profile.objects.distinct().filter(
-            Q(first_name__icontains=search) |
-            Q(last_name__icontains=search)
-        )
+        search_list = str(search).split()
+        profiles = Profile.objects.none()
+        for word in search_list:
+            profiles = profiles | Profile.objects.distinct().filter(
+                Q(first_name__icontains=word) |
+                Q(last_name__icontains=word)
+            )
     else:
         profiles = Profile.objects.all()
-    
+    # profiles.order_by(str)
     custom_range, profiles = paginate_profiles(request, profiles, 1)
     page = ''
-    
+
+    if search == None:
+        search=''
+        
     context = {
         'profiles': profiles,
         'page': page,
