@@ -8,7 +8,7 @@ from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from .utils import paginate_comments, paginate_posts
 from django.contrib import messages
-import time
+
 
 def post(request, pk):
     post = Post.objects.get(id=pk)
@@ -18,22 +18,16 @@ def post(request, pk):
     dislikes = post.dislikes.all()
     custom_range, comments = paginate_comments(request, comments, 5)
 
-    # creating a comment
     if request.method == 'POST':
         if request.user.is_authenticated:
-            Comment.objects.get_or_create(
-                author=request.user.profile,
-                post=post,
-                body=request.POST.get('comment')
-                )
-            return redirect('post', pk)
-        else:
-            messages.error(request, 'Login to add a comment')
-            return redirect('login')
-        
+            if request.POST.get('comment'):
+                Comment.objects.get_or_create(
+                    author=request.user.profile,
+                    post=post,
+                    body=request.POST.get('comment')
+                    )
+                return redirect('post', pk)
 
-    # post_rates = Rate.objects.filter(post=post)
-    # comment_rates = Rate.objects.filter()
     context = {
         'post': post,
         'tags': tags,
@@ -41,8 +35,6 @@ def post(request, pk):
         'likes': likes,
         'dislikes': dislikes,
         'custom_range': custom_range,
-        # 'form': form,
-        # 'post_rates': post_rates,
     }
     return render(request, 'posts/post.html', context)
 
@@ -339,5 +331,38 @@ def dislike_comment(request, pk):
     return redirect('post', comment.post.id)
 
 # @login_required(login_url="login")
+# def create_comment(request, pk):
+#     print('test')
+#     if request.method == 'POST':
+#         print('test1')
+#         if request.user.is_authenticated:
+#             print('test2')
+#             Comment.objects.get_or_create(
+#                 author=request.user.profile,
+#                 post=post,
+#                 body=request.POST.get('comment')
+#                 )
+#             print('test3')
+#             return redirect('post', pk)
+        # elif request.POST.get('rate'):
+        #     messages.error(request, 'Login to rate a post')
+        #     return redirect('login')
+        # else:
+        #     messages.error(request, 'Login to add a comment')
+        #     return redirect('login')
+        
+
+# @login_required(login_url="login")
 # def delete_comment(request, pk):
 #     comment = Comment.objects.get(id=pk)
+
+# def django_messages(request):
+#     if 'comment' in request.POST:
+#         next = request.POST.get('next', '/')
+#         next = next[1:-1]
+#         print(next, '+++++++++')
+#         messages.error(request, 'Login to add a comment')
+#         return redirect('login', next)
+        # else:
+        #     messages.error(request, 'Login to rate this post')
+        #     return redirect('login')

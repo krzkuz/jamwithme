@@ -5,23 +5,23 @@ def create_conversation(request, pk):
     participant = Profile.objects.get(id=pk)
     profile = Profile.objects.get(id=request.user.profile.id)
     # get all participant conversations
-    conversations = participant.conversation_set.all()
-    for obj in conversations:
-        if profile in obj.participants.all():
-            conversation = obj
-    try:
-        conversation
-        room_messages = conversation.message_set.all()
-    except:
-        conversation = Conversation.objects.create()
-        conversation.participants.add(request.user.profile, participant)
-        conversation.save()
-        # conversation name for database and chat functionality    
-        conversation.name = str(conversation.id).replace('-', '')
-        for participant in conversation.participants.all():
-            conversation.name += str(participant.first_name)
-        conversation.save()
-        room_messages = None
+    # conversations = participant.conversation_set.all()
+    # for obj in conversations:
+    #     if profile in obj.participants.all():
+    #         conversation = obj
+    # try:
+    #     conversation
+    #     room_messages = conversation.message_set.all()
+    # except:
+    conversation = Conversation.objects.create()
+    conversation.participants.add(request.user.profile, participant)
+    conversation.save()
+    # conversation name for database and chat functionality    
+    conversation.name = str(conversation.id).replace('-', '')
+    # for participant in conversation.participants.all():
+    #     conversation.name
+    conversation.save()
+    room_messages = None
     print(conversation)
     
     return conversation, room_messages

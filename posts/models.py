@@ -60,6 +60,6 @@ class Comment(models.Model):
         ordering = ['-created']
 
     def __str__(self):
-        return self.body[:30]+'...'
+        return self.body[:30]
 
 

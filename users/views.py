@@ -2,7 +2,6 @@ from django.shortcuts import render, redirect
 from .models import Follow, Instrument, Profile
 from posts.models import Post
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
 from .forms import ProfileForm, InstrumentForm, RegisterUserForm
 from django.db.models import Q
@@ -26,6 +25,12 @@ def register_user(request):
     return render(request, 'users/register.html', context)
 
 def login_user(request):
+    if request.POST.get('comments'):
+        messages.error(request, 'Login to add a comment')
+        return render(request, 'users/login.html')
+    if request.POST.get('rate'):
+        messages.error(request, 'Login to rate a post')
+        return render(request, 'users/login.html')
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
@@ -69,7 +74,10 @@ def user_settings(request):
     if request.method == 'POST':
         form = ProfileForm(request.POST, request.FILES, instance=profile)
         if form.is_valid():
-            form.save()
+            profile = form.save(commit=False)
+            profile.first_name = str(profile.first_name).capitalize()
+            profile.last_name = str(profile.last_name).capitalize()
+            profile.save()
             return redirect('profile', request.user.profile.id)
 
     context = {
@@ -79,7 +87,6 @@ def user_settings(request):
 
 @login_required(login_url="login")
 def user_skill(request):
-    profile = Profile.objects.get(user=request.user)
     form = InstrumentForm()
     if request.method == 'POST':
         form = InstrumentForm(request.POST)
@@ -108,6 +115,7 @@ def unfollow(request, pk):
     follow.follower.remove(request.user.profile)
     return redirect('following', request.user.profile.id)
 
+@login_required(login_url="login")
 def followers(request, pk):
     profile = Profile.objects.get(id=pk)
     follow = Follow.objects.get(user=profile)
@@ -146,6 +154,7 @@ def followers(request, pk):
     }
     return render(request, 'users/followers.html', context)
 
+@login_required(login_url="login")
 def following(request, pk):
     profile = Profile.objects.get(id=pk)   
     search = request.GET.get('q')
@@ -175,6 +184,7 @@ def following(request, pk):
     }
     return render(request, 'users/following.html', context)
 
+@login_required(login_url="login")
 def profiles(request):
     profile = request.user.profile
     following = Follow.objects.filter(follower=profile)
@@ -194,7 +204,6 @@ def profiles(request):
             )
     else:
         profiles = Profile.objects.all()
-    # profiles.order_by(str)
     custom_range, profiles = paginate_profiles(request, profiles, 1)
     page = ''
 
