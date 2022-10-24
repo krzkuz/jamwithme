@@ -1,29 +1,15 @@
 from .models import Conversation
 from users.models import Profile
+from django.db.models import Q
 
 def create_conversation(request, pk):
     participant = Profile.objects.get(id=pk)
     profile = Profile.objects.get(id=request.user.profile.id)
-    # get all participant conversations
-    # conversations = participant.conversation_set.all()
-    # for obj in conversations:
-    #     if profile in obj.participants.all():
-    #         conversation = obj
-    # try:
-    #     conversation
-    #     room_messages = conversation.message_set.all()
-    # except:
     conversation = Conversation.objects.create()
-    conversation.participants.add(request.user.profile, participant)
-    conversation.save()
-    # conversation name for database and chat functionality    
+    conversation.participants.add(profile, participant)  
     conversation.name = str(conversation.id).replace('-', '')
-    # for participant in conversation.participants.all():
-    #     conversation.name
     conversation.save()
     room_messages = None
-    print(conversation)
-    
     return conversation, room_messages
 
 # conversation name to display
@@ -36,6 +22,23 @@ def create_conversation_name(conversation):
             conversation_name += ', '
             i += 1
     return conversation_name
+
+def profile_search(request, all_profiles):
+    search = request.GET.get('q')
+    if search:
+        search_list = str(search).split()
+        profiles = Profile.objects.none()
+        for word in search_list:
+            profiles = profiles | all_profiles.distinct().filter(
+                Q(first_name__icontains=word) |
+                Q(last_name__icontains=word)
+            )
+    else:
+        search = ''
+        profiles = all_profiles
+    return profiles, search
+
+
 
 # def conversation_avatar(request, conversation):
 #     # room_messages = conversation.message_set.all()

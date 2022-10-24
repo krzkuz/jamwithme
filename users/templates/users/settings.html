@@ -7,11 +7,12 @@ Settings
 <div class="container-fluid d-flex justify-content-center">
     <form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
-    {% for field in form %}
+    <!-- {% for field in form %}
     <label class="form-label">{{field.label}}</label><br>
     {{field}}
     <br>
-    {% endfor %}
+    {% endfor %} -->
+    {{form.as_p}}
     <button type="submit" class="btn btn-secondary">Save</button>
     </form>
 </div>

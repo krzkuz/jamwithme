@@ -8,20 +8,23 @@ Messages
 <div class="container-fluid">
     <div class="row justify-content-center">
         <div class="col-md-12 col-lg-2">
-            <h4>Last conversations</h4>
+            <h4>Conversations</h4>
             {% for conversation in conversations %}
-                <div class="container border border rounded">
+                {% if conversation.participants.all.count == 1 %}
+                {% else %}
+                <div class="border border rounded">
                     <a href="{% url 'messages' conversation.id %}" class="link-secondary h5 text-decoration-none p-3">
                         {% for participant in conversation.participants.all %}
                             {% if request.user.profile == participant %}
                             {% else %}
-                                <div class="container">
+                                <div class="">
                                     <img class="image-fluid rounded" style="max-width: 40px" src="{{participant.image_url}}" />{{participant.first_name}} {{participant.last_name}} 
                                 </div>                        
-                            {% endif %}
+                            {% endif %}                        
                         {% endfor %}
                         </a>
                 </div>
+                {% endif %}
             {% endfor %}
         </div>
         
@@ -51,25 +54,29 @@ Messages
             
 
             <div class="row container-fluid rounded border border-secondary rounded">
-            <div class="container">
+            <div class="chat">
                 <div id="chat-log">
                 {% for message in room_messages %}     
-                    {% if message.sender.user == request.user %}   
-                        <div class="message receiver">{{message.body}}</div><br>                           
+                    {% if message.sender.user == request.user %}  
+                    <div class="">
+                        <div class="message receiver">{{message.body}}</div>   
+                    </div> 
+                                             
                     {% else %}
                     
-                    <div class="container">
-                        <div class=""><a href="{% url 'profile' message.sender.id %}"><img class="rounded" style="max-width: 30px; float: right;" src="{{message.sender.image_url}}"></a></div>
-                        <div class="message sender" style="float: right;">{{message.body}}</div><br><br>
+                    <div class="flex-container">                        
+                        <div class="message sender">{{message.body}}</div>
+                        <div class=""><img class="rounded sender" style="height: 40px" src="{{message.sender.image_url}}"></div>
+                        
                     </div>          
                     {% endif %}
                 {% endfor %}
                 </div>
             </div>
             </div>
-            <div class="container">
-                <input id="chat-message-input" class="form-control" type="text" size="100"><br>
-                <input id="chat-message-submit" type="button" value="Send">
+            <div class="" style="display: inline-flex; justify-content: space-between;" >
+                <input id="chat-message-input" class="form-control" type="text" style="width: 1050px;">
+                <input id="chat-message-submit" type="button" value="Send" class="btn btn-secondary">
             </div>                    
         </div>
 
@@ -104,12 +111,13 @@ Messages
 </div>
  
   {{ conversation.name|json_script:"room-name" }}
-  {{ request.user.profile.first_name|json_script:"username" }}
+  <!-- {{ request.user.profile.first_name|json_script:"username" }} -->
   {{ conversation.id|json_script:"conversationId" }}
+  {{ request.user.profile.id|json_script:"loggedInUserId" }}
   <script>
     const chatLog = document.querySelector('#chat-log')
     const roomName = JSON.parse(document.getElementById('room-name').textContent);
-    const username = JSON.parse(document.getElementById('username').textContent);
+    // const username = JSON.parse(document.getElementById('username').textContent);
     const conversationId = JSON.parse(document.getElementById('conversationId').textContent);
 
     if (!chatLog.hasChildNodes()){
@@ -132,10 +140,37 @@ Messages
         const data = JSON.parse(e.data);
         // document.querySelector('#chat-log').value += (data.username + ': ' + data.message + '\n');
         const messageElement = document.createElement('div')
+        const messageDiv = document.createElement('div')
+        const userId = data['user_id']
+        const loggedInUserId = JSON.parse(document.getElementById('loggedInUserId').textContent)
         messageElement.innerText = data.message
-        messageElement.classList= 'message receiver'
-        chatLog.appendChild(messageElement)
+        const picture = document.createElement('img')
+        picture.src = data['profile_picture']
+        picture.height = 40
+        picture.classList.add('rounded', 'sender')
         
+        if (userId===loggedInUserId){
+            messageElement.classList.add('message', 'receiver')
+            messageDiv.appendChild(messageElement)
+            chatLog.appendChild(messageDiv) 
+        }
+        else {
+            messageElement.classList.add('message', 'sender')
+            messageDiv.classList.add('flex-container')
+            messageDiv.appendChild(messageElement)
+            messageDiv.appendChild(picture)
+            chatLog.appendChild(messageDiv)  
+            // last = messageDiv.lastChild
+            // console.log(last)
+            // if (last===messageElement){
+            //     messageDiv.appendChild(picture)
+            // }
+            // chatLog.appendChild(messageDiv)  
+             
+        }
+        
+      
+
         if (document.querySelector('#emptyText')){
             document.querySelector('#emptyText').remove()
         }
@@ -153,7 +188,7 @@ Messages
         const message = messageInput.value;
         chatSocket.send(JSON.stringify({
             'message': message,
-            'username': username,
+            // 'username': username,
             'conversationId': conversationId,
         }));
         messageInput.value = '';

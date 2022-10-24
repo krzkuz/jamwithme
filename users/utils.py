@@ -1,4 +1,6 @@
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.db.models import Q
+from .models import Profile
 
 def paginate_profiles(request, profiles, results):
     page = request.GET.get('page')
@@ -24,3 +26,18 @@ def paginate_profiles(request, profiles, results):
     custom_range = range(left_index, right_index + 1)
     
     return custom_range, profiles
+
+def profile_search(request, all_profiles):
+    search = request.GET.get('q')
+    if search:
+        search_list = str(search).split()
+        profiles = Profile.objects.none()
+        for word in search_list:
+            profiles = profiles | all_profiles.distinct().filter(
+                Q(first_name__icontains=word) |
+                Q(last_name__icontains=word)  
+            )
+    else:
+        profiles = all_profiles
+        search = ''
+    return profiles, search

@@ -9,7 +9,10 @@ def create_profile(sender, instance, created, **kwargs):
     if created:
         user = instance
         profile = Profile.objects.create(
-            user = user
+            user = user,
+            first_name = user.first_name,
+            last_name = user.last_name,
+            email = user.email,
         )
 
 post_save.connect(create_profile, sender=User)

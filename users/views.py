@@ -4,9 +4,8 @@ from posts.models import Post
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from .forms import ProfileForm, InstrumentForm, RegisterUserForm
-from django.db.models import Q
 from django.contrib.auth.decorators import login_required
-from .utils import paginate_profiles
+from .utils import paginate_profiles, profile_search
 
 
 def register_user(request):
@@ -15,9 +14,13 @@ def register_user(request):
         form = RegisterUserForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
+            user.username = user.username.lower()
             user.save()
             login(request, user)
+            messages.success(request, 'You have created an account')
             return redirect('posts')
+        else:
+            messages.error(request, 'Wrong username or password')
 
     context = {
         'form': form
@@ -57,6 +60,7 @@ def profile(request, pk):
     follow = Follow.objects.get(user=profile)
     followers = follow.follower.all()
     following = Follow.objects.filter(follower=profile)
+
 
     context = {
         'profile': profile,
@@ -106,14 +110,16 @@ def follow(request, pk):
     user = Profile.objects.get(id=pk)
     follow = Follow.objects.get(user=user)
     follow.follower.add(request.user.profile)
-    return redirect('profile', pk)
+    return redirect(request.META.get('HTTP_REFERER'))
+    # return redirect('profile', pk)
 
 @login_required(login_url="login")
 def unfollow(request, pk):
     user = Profile.objects.get(id=pk)
     follow = Follow.objects.get(user=user)
     follow.follower.remove(request.user.profile)
-    return redirect('following', request.user.profile.id)
+    return redirect(request.META.get('HTTP_REFERER'))
+    # return redirect('profile', pk)
 
 @login_required(login_url="login")
 def followers(request, pk):
@@ -126,24 +132,10 @@ def followers(request, pk):
     for obj in following_obj:
         following.append(obj.user)
 
-    search = request.GET.get('q')
-    if search:
-        search_list = str(search).split()
-        followers = Follow.objects.none()
-        for word in search_list:
-            followers = followers | followers_obj.distinct().filter(
-                Q(first_name__icontains=word) |
-                Q(last_name__icontains=word)  
-            )
-    else:
-        followers = followers_obj
-    
-    custom_range, followers = paginate_profiles(request, followers, 1)
+    followers, search = profile_search(request, followers_obj)
+    custom_range, followers = paginate_profiles(request, followers, 10)
     page = ''
 
-    if search == None:
-        search=''
-    
     context = {
         'profile': profile,
         'followers': followers,
@@ -157,23 +149,16 @@ def followers(request, pk):
 @login_required(login_url="login")
 def following(request, pk):
     profile = Profile.objects.get(id=pk)   
-    search = request.GET.get('q')
-    if search:
-        search_list = str(search).split()
-        following = Follow.objects.none()
-        for word in search_list:
-            following = following | Follow.objects.distinct().filter(
-                Q(user__first_name__icontains=word) |
-                Q(user__last_name__icontains=word)
-            )
-    else:
-        following = Follow.objects.filter(follower=profile)
+    following = Follow.objects.filter(follower=profile)
+    following_users_ids = []
+    for follow in following:
+        following_users_ids.append(follow.user.id)
+    following = Profile.objects.filter(id__in=following_users_ids)
+    following, search = profile_search(request, following)
     
-    custom_range, following = paginate_profiles(request, following, 1)
+    custom_range, following = paginate_profiles(request, following, 10)
     page = ''
 
-    if search == None:
-        search=''
 
     context = {
         'profile': profile,
@@ -187,29 +172,17 @@ def following(request, pk):
 @login_required(login_url="login")
 def profiles(request):
     profile = request.user.profile
+    profiles = Profile.objects.all()
     following = Follow.objects.filter(follower=profile)
     following_profiles = [] 
 
     for follow in following:
         following_profiles.append(follow.user)
     
-    search = request.GET.get('q')
-    if search:
-        search_list = str(search).split()
-        profiles = Profile.objects.none()
-        for word in search_list:
-            profiles = profiles | Profile.objects.distinct().filter(
-                Q(first_name__icontains=word) |
-                Q(last_name__icontains=word)
-            )
-    else:
-        profiles = Profile.objects.all()
-    custom_range, profiles = paginate_profiles(request, profiles, 1)
+    profiles, search = profile_search(request, profiles)
+    custom_range, profiles = paginate_profiles(request, profiles, 10)
     page = ''
 
-    if search == None:
-        search=''
-        
     context = {
         'profiles': profiles,
         'page': page,

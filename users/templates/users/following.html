@@ -21,14 +21,14 @@ Following
             {% for follow in following %}
             <div class="row container-fluid rounded border border-light">
                 <div class="col d-flex align-items-center">
-                    <a class="link-secondary h5 text-decoration-none p-3" href="{% url 'follow' follow.user.id %}">
-                    <img class="image-fluid rounded" style="max-width: 80px;" src="{{follow.user.image_url}}"> {{follow.user.first_name}} {{follow.user.last_name}}</a>
+                    <a class="link-secondary h5 text-decoration-none p-3" href="{% url 'follow' follow.id %}">
+                    <img class="image-fluid rounded" style="max-width: 80px;" src="{{follow.image_url}}"> {{follow.first_name}} {{follow.last_name}}</a>
                 </div>
                 
                 <div class="col d-flex align-items-center justify-content-end">
-                    <a class="btn btn-outline-light" href="{% url 'messages' follow.user.id %}">Send message</a><br>
+                    <a class="btn btn-outline-light" href="{% url 'messages' follow.id %}">Send message</a><br>
                     <a class="btn btn-outline-light" href="">Send jam request</a><br>                    
-                    <a href="{% url 'unfollow' follow.user.id %}" class="btn btn-outline-light">Unollow</a><br>                 
+                    <a href="{% url 'unfollow' follow.id %}?next={{ request.path|urlencode }}" class="btn btn-outline-light">Unollow</a><br>                 
                 </div> 
                 <br><br>                   
             </div>        

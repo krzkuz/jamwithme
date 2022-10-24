@@ -14,7 +14,13 @@ Profile
       
       <div class="row">
         <h5>{{profile.first_name}} {{profile.last_name}}</h5>
-        <p>{{profile.location}}</p>
+        <p>Location:<br> 
+          {% if profile.location == None %}
+          No info
+          {% else %}
+          {{profile.location}}
+          {% endif %}
+        </p>
         <br />
       </div>
       <div class="row">
@@ -48,7 +54,11 @@ Profile
       <p>
         Bio:
         <br>
+        {% if profile.bio %}
         {{profile.bio}}
+        {% else %}
+        No info
+        {% endif %}
       </p>        
 
       {% if request.user.profile.id == profile.id %} 

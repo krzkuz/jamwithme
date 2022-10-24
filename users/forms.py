@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 class ProfileForm(ModelForm):
     class Meta:
         model = Profile
-        exclude = ['user', 'friend', 'created', 'id']
+        exclude = ['user', 'created', 'id']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -34,7 +34,7 @@ class InstrumentForm(ModelForm):
 class RegisterUserForm(UserCreationForm):
     class Meta:
         model = User
-        fields = ['username']
+        fields = ['username', 'first_name', 'last_name', 'email']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

@@ -2,9 +2,9 @@ body{
     background-color: rgb(234, 234, 234);
 }
 
-.message {
+/* .message {
 	color:  #ffffff;
-	min-width: 5%;
+	min-width: 7%;
     max-width: 90%; 
 	padding: 10px;
 	border-radius: 2em;
@@ -16,16 +16,54 @@ body{
 .sender {
 	background-color: #71aeeb;
 	margin-left: auto;
-    /* text-align: right;
-    float: right; */
+    float: right; 
 }
 
 .receiver {
 	background-color: #a5a5a5;    
+} */
+
+
+.message {
+	color:  #ffffff;
+	max-width: 75%; 
+	min-width: 7%;
+	display: inline-flex;
+	padding: 10px;
+	border-radius: 2em;
+	margin: 1px 0px;
+	font-family: 'Poppins', sans-serif;
+	
+	
+	
+}
+
+.sender {
+    
+	background-color: #71aeeb;
+	/* justify-items: end; */
+	/* align-items: center; */
+
+}
+
+.receiver {
+	background-color: #a5a5a5;  
 }
 
 .imageContainer {
     margin: auto;
   position: absolute;
   top: 0; left: 0; bottom: 0; right: 0;
+}
+
+.chat {
+	height: 700px;
+	overflow: auto;
+	display: flex;
+	flex-direction: column-reverse;
+}
+
+.flex-container {
+	display: flex;
+	justify-content: flex-end;
 }

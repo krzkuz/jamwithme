@@ -1,12 +1,9 @@
 from django.shortcuts import render, redirect
 from .models import Message, Conversation
 from users.models import Profile, Follow
-from .utils import create_conversation, create_conversation_name
+from .utils import create_conversation, create_conversation_name, profile_search
 from django.contrib.auth.decorators import login_required
-from django.db.models import Q
 from users.utils import paginate_profiles
-from .utils import create_conversation_name
-import uuid
 
 @login_required(login_url="login")
 def users_messages(request, pk):
@@ -41,6 +38,7 @@ def users_messages(request, pk):
                     conversation = obj
                     room_messages = conversation.message_set.all()
                     return redirect('messages', conversation.id)
+                
             conversation, room_messages = create_conversation(request, pk)                        
             return redirect('messages', conversation.id)
         except:
@@ -71,28 +69,15 @@ def users_messages(request, pk):
 @login_required(login_url="login")
 def add_to_conversation(request, pk):
     conversation = Conversation.objects.get(id=pk)
+    profiles = Profile.objects.all()
     conversation_profiles = conversation.participants.all()
     excludes = [request.user.profile.id]
     for participant in conversation_profiles:
-        excludes.append(participant.id)
-    search = request.GET.get('q')
-    if search:
-        search_list = str(search).split()
-        profiles = Profile.objects.none()
-        for word in search_list:
-            profiles = profiles | Profile.objects.distinct().filter(
-                Q(first_name__icontains=word) |
-                Q(last_name__icontains=word)
-            )
-    else:
-        profiles = Profile.objects.all()
-    
+        excludes.append(participant.id)  
     profiles = profiles.exclude(id__in=excludes)
-    custom_range, profiles = paginate_profiles(request, profiles, 1)
+    profiles, search = profile_search(request, profiles)   
+    custom_range, profiles = paginate_profiles(request, profiles, 10)
     page = ''
-
-    if search == None:
-        search=''
 
     if request.method == 'POST':
         person_id = request.POST.get('person_id') 
@@ -100,7 +85,6 @@ def add_to_conversation(request, pk):
         conversation.participants.add(person)
         conversation.save()
         return redirect('messages', conversation.id)
-
 
     context = {
         'profiles': profiles,
@@ -116,21 +100,10 @@ def remove_from_conversation(request, pk):
     conversation = Conversation.objects.get(id=pk)
     profiles = conversation.participants.all()
     
-    search = request.GET.get('q')
-    if search:
-        search_list = str(search).split()
-        profiles = Profile.objects.none()
-        for word in search_list:
-            profiles = profiles | Profile.objects.distinct().filter(
-                Q(first_name__icontains=word) |
-                Q(last_name__icontains=word)
-            )
-    
-    custom_range, profiles = paginate_profiles(request, profiles, 1)
+    profiles, search = profile_search(request, profiles)
+    custom_range, profiles = paginate_profiles(request, profiles, 10)
     page = ''
 
-    if search == None:
-        search=''
 
     if request.method == 'POST':
         person_id = request.POST.get('person_id') 
@@ -141,6 +114,7 @@ def remove_from_conversation(request, pk):
 
     #variable to choose template functionality
     choose = 'remove'
+
     context = {
         'profiles': profiles,
         'page': page,
@@ -155,21 +129,10 @@ def participants(request, pk):
     conversation = Conversation.objects.get(id=pk)
     profiles = conversation.participants.all()
 
-    search = request.GET.get('q')
-    if search:
-        search_list = str(search).split()
-        profiles = Profile.objects.none()
-        for word in search_list:
-            profiles = profiles | Profile.objects.distinct().filter(
-                Q(first_name__icontains=word) |
-                Q(last_name__icontains=word)
-            )
     
-    custom_range, profiles = paginate_profiles(request, profiles, 1)
+    profiles, search = profile_search(request, profiles)
+    custom_range, profiles = paginate_profiles(request, profiles, 10)
     page = ''
-
-    if search == None:
-        search=''
 
     choose = 'participants'
 
@@ -182,3 +145,6 @@ def participants(request, pk):
     }
 
     return render(request, 'users/profiles.html', context)
+
+# @login_required(login_url="login")
+# def jam_request(request, pk):

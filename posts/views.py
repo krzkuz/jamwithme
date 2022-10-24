@@ -3,11 +3,10 @@ from django.shortcuts import get_object_or_404
 from users.models import Follow, Profile
 from .models import Post, Tag, Comment
 from .forms import PostForm
-from django.db.models import Q
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from .utils import paginate_comments, paginate_posts
-from django.contrib import messages
+from .utils import post_search
 
 
 def post(request, pk):
@@ -16,7 +15,7 @@ def post(request, pk):
     comments = Comment.objects.filter(post=post)
     likes = post.likes.all()
     dislikes = post.dislikes.all()
-    custom_range, comments = paginate_comments(request, comments, 5)
+    custom_range, comments = paginate_comments(request, comments, 10)
 
     if request.method == 'POST':
         if request.user.is_authenticated:
@@ -39,28 +38,9 @@ def post(request, pk):
     return render(request, 'posts/post.html', context)
 
 def posts(request):
-    search = request.GET.get('q')
-    if search:
-        search_list = str(search).split()
-        tags_filtered = Tag.objects.none()
-        posts = Post.objects.none()
-        for word in search_list:
-            tags_filtered = tags_filtered | Tag.objects.filter(name=word)
-        for word in search_list:
-            posts = posts | Post.objects.distinct().filter(
-                Q(author__first_name__icontains=word) |
-                Q(author__last_name__icontains=word) |
-                Q(body__icontains=word) |
-                Q(subject__icontains=word) |
-                Q(tags__in=tags_filtered)
-            )
-    else:
-        posts = Post.objects.all()
-    
+    posts = Post.objects.all()
+    posts, search = post_search(request, posts)
     tags = Tag.objects.all()
-
-    if search == None:
-        search=''
 
     # following user posts
     user_id = request.GET.get('u')
@@ -81,7 +61,7 @@ def posts(request):
     else: 
         following = None
     
-    custom_range, posts = paginate_posts(request, posts, 1)
+    custom_range, posts = paginate_posts(request, posts, 10)
 
     context = {
         'posts': posts,
@@ -92,56 +72,6 @@ def posts(request):
         'search': search,
     }
     return render(request, 'posts/posts.html', context)
-
-# def posts(request):
-#     search = request.GET.get('q')
-#     if search:
-#         tags_filtered = Tag.objects.filter(name=search)
-#         posts = Post.objects.distinct().filter(
-#             Q(author__first_name__icontains=search) |
-#             Q(author__last_name__icontains=search) |
-#             Q(body__icontains=search) |
-#             Q(subject__icontains=search) |
-#             Q(tags__in=tags_filtered)
-#         )
-#     else:
-#         posts = Post.objects.all()
-        
-#     tags = Tag.objects.all()
-
-#     if search == None:
-#         search=''
-
-#     # following user posts
-#     user_id = request.GET.get('u')
-#     if user_id:
-#         author = Profile.objects.get(id=user_id)
-#         posts = author.post_set.all()
-
-#     popular_tags = {}
-#     for tag in tags:
-#         popular_tags[tag.name] = tag.post_set.all().count()
-#     popular_tags = sorted(popular_tags.items(), key=lambda x: x[1], reverse=True)
-#     popular_tags = dict(popular_tags)
-#     # popular_tags = popular_tags[:10] 
-    
-#     if request.user.is_authenticated:
-#         profile = request.user.profile
-#         following = profile.follower.all()
-#     else: 
-#         following = None
-    
-#     custom_range, posts = paginate_posts(request, posts, 1)
-
-#     context = {
-#         'posts': posts,
-#         'tags': tags,
-#         'following': following,
-#         'custom_range': custom_range,
-#         'popular_tags': popular_tags,
-#         'search': search,
-#     }
-#     return render(request, 'posts/posts.html', context)
 
 @login_required(login_url="login")
 def create_post(request):

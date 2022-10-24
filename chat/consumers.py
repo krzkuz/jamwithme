@@ -26,7 +26,8 @@ class ChatRoomConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
-        username = text_data_json['username']
+        # self.user_id = self.scope['user'].profile.id
+        # username = text_data_json['username']
         conversation_id = text_data_json['conversationId'] 
 
         # Find conversation
@@ -34,30 +35,42 @@ class ChatRoomConsumer(AsyncWebsocketConsumer):
 
         # Find message sender
         sender = await database_sync_to_async(Profile.objects.get)(user=self.scope['user'])
-        
+        user_id = str(sender.id)
+        profile_picture = str(sender.image_url)
+        # participants = await database_sync_to_async(conversation.participants.all)()
+
         # Create new message
-        new_message = Message(
-            sender=sender,
-            body=message,
-            conversation=conversation,
-        )
-        await database_sync_to_async(new_message.save)()
-        await database_sync_to_async(new_message.conversation.save)()
+        # if sender in participants:
+        if message != '':
+            new_message = Message(
+                sender=sender,
+                body=message,
+                conversation=conversation,
+            )
+            await database_sync_to_async(new_message.save)()
+            await database_sync_to_async(new_message.conversation.save)()
 
         await self.channel_layer.group_send(
             self.room_group_name,
             {
                 'type': 'chat_message',
                 'message': message,
-                'username': username,
+                'user_id': user_id,
+                'profile_picture': profile_picture,
+                # 'username': username,
                 'conversation_id': conversation_id,
             }
         )
 
     async def chat_message(self, event):
         message = event['message']
-        username = event['username']
-        await self.send(text_data=json.dumps({
-            'message': message,
-            'username': username,
-        }))
+        user_id = event['user_id']
+        profile_picture = event['profile_picture']
+        # username = event['username']
+        if message != '':
+            await self.send(text_data=json.dumps({
+                'message': message,
+                'user_id': user_id,
+                'profile_picture': profile_picture,
+                # 'username': username,
+            }))
