@@ -8,7 +8,6 @@ from django.contrib.auth.decorators import login_required
 from .utils import paginate_comments, paginate_posts
 from .utils import post_search
 
-
 def post(request, pk):
     post = Post.objects.get(id=pk)
     tags = post.tags.all()
@@ -26,7 +25,7 @@ def post(request, pk):
                     body=request.POST.get('comment')
                     )
                 return redirect('post', pk)
-
+    
     context = {
         'post': post,
         'tags': tags,
@@ -47,7 +46,9 @@ def posts(request):
     if user_id:
         author = Profile.objects.get(id=user_id)
         posts = author.post_set.all()
-
+    else:
+        author = None
+        
     popular_tags = {}
     for tag in tags:
         popular_tags[tag.name] = tag.post_set.all().count()
@@ -70,6 +71,7 @@ def posts(request):
         'custom_range': custom_range,
         'popular_tags': popular_tags,
         'search': search,
+        'user_search': author,
     }
     return render(request, 'posts/posts.html', context)
 

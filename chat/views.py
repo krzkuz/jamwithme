@@ -146,5 +146,3 @@ def participants(request, pk):
 
     return render(request, 'users/profiles.html', context)
 
-# @login_required(login_url="login")
-# def jam_request(request, pk):

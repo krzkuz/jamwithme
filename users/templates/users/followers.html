@@ -28,7 +28,7 @@ Followers
                 
                 <div class="col d-flex align-items-center justify-content-end">
                     <a class="btn btn-outline-light" href="{% url 'messages' follower.id %}">Send message</a><br>
-                    <a class="btn btn-outline-light" href="">Send jam request</a><br>
+                    <a class="btn btn-outline-light" href="{% url 'jam-request' follower.id %}">Send jam request</a><br>
                     {% if follower in following %}
                         <a href="{% url 'unfollow' follower.id %}?next={{ request.path|urlencode }}" class="btn btn-outline-light">Unollow</a><br>  
                     {% else %}

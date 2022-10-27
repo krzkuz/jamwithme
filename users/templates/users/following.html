@@ -27,7 +27,7 @@ Following
                 
                 <div class="col d-flex align-items-center justify-content-end">
                     <a class="btn btn-outline-light" href="{% url 'messages' follow.id %}">Send message</a><br>
-                    <a class="btn btn-outline-light" href="">Send jam request</a><br>                    
+                    <a class="btn btn-outline-light" href="{% url 'jam-request' follow.id %}">Send jam request</a><br>                    
                     <a href="{% url 'unfollow' follow.id %}?next={{ request.path|urlencode }}" class="btn btn-outline-light">Unollow</a><br>                 
                 </div> 
                 <br><br>                   

@@ -28,7 +28,7 @@ Profile
           {% if request.user.profile.id != profile.id %}
           <a class="btn btn-outline-secondary" href="{% url 'messages' profile.id %}">Send message</a>
           <br>
-          <a class="btn btn-outline-secondary" href="">Send jam request</a>
+          <a class="btn btn-outline-secondary" href="{% url 'jam-request' profile.id %}">Send jam request</a>
           {% endif %} <br>
           {% if profile.social_youtube %}
           <a href="{{profile.social_youtube}}"><svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-youtube text-secondary" viewBox="0 0 16 16">

@@ -35,7 +35,7 @@ Profiles
                 <div class="col d-flex align-items-center justify-content-end">
                     {% if profile.id != request.user.profile.id %}
                     <a class="btn btn-outline-light" href="{% url 'messages' profile.id %}">Send message</a><br>
-                    <a class="btn btn-outline-light" href="">Send jam request</a><br>
+                    <a class="btn btn-outline-light" href="{% url 'jam-request' profile.id %}">Send jam request</a><br>
                     {% if profile not in following_profiles %}
                         <a href="{% url 'follow' profile.id %}" class="btn btn-outline-light">Follow</a><br>
                     {% else %}
