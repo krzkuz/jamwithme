@@ -2,7 +2,6 @@ from django.db import models
 from users.models import Profile
 import uuid
 
-
 class Post(models.Model):
     author = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True, blank=True)
     subject = models.CharField(max_length=300, null=True, blank=True)
