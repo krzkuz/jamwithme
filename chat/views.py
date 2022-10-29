@@ -4,6 +4,8 @@ from users.models import Profile, Follow
 from .utils import create_conversation, create_conversation_name, profile_search
 from django.contrib.auth.decorators import login_required
 from users.utils import paginate_profiles
+from notification.models import Notification
+
 
 @login_required(login_url="login")
 def users_messages(request, pk):
@@ -53,6 +55,13 @@ def users_messages(request, pk):
         conversation_name = create_conversation_name(conversation)
     except:
         conversation_name = None
+
+    # reset all message notifications when in this view
+    notifications = Notification.objects.filter(to_users__in=user)
+    for notification in notifications:
+        if notification.message:
+            notification.seen = True
+            notification.save()
 
     context = {
         'following': following,

@@ -66,7 +66,7 @@ Messages
                     
                     <div class="flex-container">                        
                         <div class="message sender">{{message.body}}</div>
-                        <div class=""><img class="rounded sender" style="height: 40px" src="{{message.sender.image_url}}"></div>
+                        <div class=""><img class="rounded-circle sender" style="height: 40px" src="{{message.sender.image_url}}"></div>
                         
                     </div>          
                     {% endif %}
@@ -147,7 +147,7 @@ Messages
         const picture = document.createElement('img')
         picture.src = data['profile_picture']
         picture.height = 40
-        picture.classList.add('rounded', 'sender')
+        picture.classList.add('rounded-circle', 'sender')
         
         if (userId===loggedInUserId){
             messageElement.classList.add('message', 'receiver')

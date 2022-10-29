@@ -17,7 +17,7 @@ def notification_seen(request, pk):
     notification = Notification.objects.get(id=pk)
     notification.seen = True
     notification.save()
-    return redirect(request.META.get('HTTP_REFERER'))
+    return redirect(notification.link)
 # @login_required(login_url="login")
 # def notifications(request):
 #     profile = Profile.objects.filter(user=request.user)

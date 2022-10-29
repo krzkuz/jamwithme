@@ -1,13 +1,18 @@
 <div class="dropdown">
-  <a class="btn btn-secondary dropdown-toggle text-dark" data-bs-toggle="dropdown" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+  <a class="btn btn-secondary dropdown-toggle text-dark" data-bs-toggle="dropdown" href="#" role="button" 
+  id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
     Notifications({{unseen.count}})
   </a>
 
-  <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+  <div class="dropdown-menu notifications bg-white" aria-labelledby="dropdownMenuLink">
     {% for notification in notifications %}
-    {% if notification.link %}
-    <a class="dropdown-item" href="{{notification.link}}" onclick="location.href='{% url 'notification-seen' notification.id %}'" >
-        <img class="rounded-circle shadow-1-strong me-3" style="max-width: 30px" src="{{notification.from_user.image_url}}"/>{{notification.name}}
+    {% if notification.seen %}
+    <a class="dropdown-item text-secondary" href="{{notification.link}}">
+        <img class="rounded-circle" style="max-width: 30px" src="{{notification.from_user.image_url}}"/>{{notification.name}}
+    </a>    
+    {% else %}
+    <a class="dropdown-item" onclick="location.href='{% url 'notification-seen' notification.id %}'" >
+        <img class="rounded-circle" style="max-width: 30px" src="{{notification.from_user.image_url}}"/>{{notification.name}}
     </a>    
     {% endif %}
     {% endfor %}
