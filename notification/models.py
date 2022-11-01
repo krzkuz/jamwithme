@@ -15,7 +15,7 @@ class JamRequest(models.Model):
 
 
 class Notification(models.Model):
-    # type 1-like/dislike(post), 2-comment(post), 3-jamrequest, 4-follow, 5-message
+    # type 1-like/dislike(post, comment), 2-comment(post), 3-jamrequest, 4-follow
     type = models.IntegerField(null=True, blank=True)
     from_user = models.ForeignKey(Profile, on_delete=models.CASCADE, null=True, related_name='from_user')
     to_users = models.ManyToManyField(Profile, related_name='to_user')

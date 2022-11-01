@@ -53,8 +53,9 @@ def posts(request):
     for tag in tags:
         popular_tags[tag.name] = tag.post_set.all().count()
     popular_tags = sorted(popular_tags.items(), key=lambda x: x[1], reverse=True)
+    popular_tags = popular_tags[:10] 
     popular_tags = dict(popular_tags)
-    # popular_tags = popular_tags[:10] 
+    
     
     if request.user.is_authenticated:
         profile = request.user.profile
@@ -109,10 +110,14 @@ def update_post(request, pk):
             get_tags = request.POST.get('tags').replace(',', ' ').split()
             post = form.save(commit=False)
             post.save()
-            tags.delete()
-            for tag in get_tags:
-                tag, created = Tag.objects.get_or_create(name=tag.lower().capitalize())
-                post.tags.add(tag)            
+
+            for tag in tags:
+                post.tags.remove(tag)
+            # post.tags.all().delete()
+            if get_tags:
+                for tag in get_tags:
+                    tag, created = Tag.objects.get_or_create(name=tag.lower().capitalize())
+                    post.tags.add(tag)        
             return redirect('post', pk)
     context = {
         'form': form,
@@ -133,9 +138,6 @@ def delete_post(request, pk):
 
 @login_required(login_url="login")
 def like_post(request):
-    # if not request.user.is_authenticated:
-    #         messages.error(request, 'Login to add rate post')
-    #         return redirect('login')
     if request.POST.get('action') == 'post':
         id = request.POST.get('postid')
         post = get_object_or_404(Post, id=id)
@@ -155,14 +157,6 @@ def like_post(request):
             'dislikes': dislikes,
             # 'liked': liked,
          })
-    # post = Post.objects.get(id=pk)
-    # if request.user.profile in post.dislikes.all():
-    #     post.dislikes.remove(request.user.profile)
-    # if request.user.profile in post.likes.all():
-    #     post.likes.remove(request.user.profile)
-    # else:
-    #     post.likes.add(request.user.profile)
-    # return redirect('post', pk)
 
 @login_required(login_url="login")
 def dislike_post(request):
@@ -185,16 +179,6 @@ def dislike_post(request):
             'dislikes': dislikes,
             # 'liked': liked,
          })
-
-# def dislike_post(request, pk):
-#     post = Post.objects.get(id=pk)
-#     if request.user.profile in post.likes.all():
-#         post.likes.remove(request.user.profile)
-#     if request.user.profile in post.dislikes.all():
-#         post.dislikes.remove(request.user.profile)
-#     else:
-#         post.dislikes.add(request.user.profile)
-#     return redirect('post', pk)
 
 # @login_required
 # def like_comment(request):
@@ -262,6 +246,12 @@ def dislike_comment(request, pk):
         comment.dislikes.add(request.user.profile)
     return redirect('post', comment.post.id)
 
+@login_required(login_url="login")
+def delete_comment(request, pk):
+    comment = Comment.objects.get(id=pk)
+    if request.user.profile == comment.author:
+        comment.delete()
+    return redirect(request.META.get('HTTP_REFERER'))
 # @login_required(login_url="login")
 # def create_comment(request, pk):
 #     print('test')

@@ -98,8 +98,15 @@
                     height="65" /></a>
                   <div class="card w-100" style="background-color: #66686c;">
                     <div class="card-body p-4">
-                      <div class="">
-                        <a href="{% url 'profile' comment.author.id %}" class="link-dark text-decoration-none"><h5>{{comment.author}}</h5></a>
+                      <div class="row">
+                        <div class="col">                                      
+                          <a href="{% url 'profile' comment.author.id %}" class="link-dark text-decoration-none"><h5>{{comment.author}}</h5></a>
+                        </div>                        
+                        <div class="col d-flex justify-content-end">
+                          {% if comment.author == request.user.profile %}
+                            <a class="link-secondary text-decoration-none text-dark h5" href="{% url 'delete-comment' comment.id %}">Delete comment</a>
+                          {% endif %}
+                        </div>                     
                         <p class="small">{{comment.created}}</p>
                         <p>
                           {{comment.body}}
@@ -128,6 +135,7 @@
                               </svg>
                               {% endif %}
                               {{comment.dislikes.count}}</a>
+                              
                           </div>
                         </div>
                       </div>

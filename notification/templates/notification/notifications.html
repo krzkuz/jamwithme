@@ -8,34 +8,36 @@
     {% for notification in notifications %}
     {% if notification.seen %}
     <a class="dropdown-item text-secondary" href="{{notification.link}}">
-        <img class="rounded-circle" style="max-width: 30px" src="{{notification.from_user.image_url}}"/>{{notification.name}}
+        <img class="rounded-circle imageThumbnail" src="{{notification.from_user.image_url}}"/>{{notification.name}}
     </a>    
     {% else %}
     <a class="dropdown-item" onclick="location.href='{% url 'notification-seen' notification.id %}'" >
-        <img class="rounded-circle" style="max-width: 30px" src="{{notification.from_user.image_url}}"/>{{notification.name}}
+        <img class="rounded-circle imageThumbnail" src="{{notification.from_user.image_url}}"/>{{notification.name}}
     </a>    
     {% endif %}
     {% endfor %}
 </div>
 
 <script>
-//    $(document).on('click', '#dropdownMenuLink', function (e) {
-//     e.preventDefault();
-//     $.ajax({
-//       type: 'POST',
-//       url: '{% url "like-post" %}',
-//       data: {
-//         postid: $('#like-post').val(),
-//         csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
-//         action: 'post'
-//       },
-//       success: function (json) {
-//         document.getElementById("like-count").innerHTML = json['likes']
-//         document.getElementById("dislike-count").innerHTML = json['dislikes']
-//       },
-//       error: function (xhr, errmsg, err) {
-//         console.log(err)
-//       }
-//     });
-//   })
+
+   {% comment %} $(document).on('click', '#dropdownMenuLink', function (e) {
+    e.preventDefault();
+    $.ajax({
+        url:'{% url 'posts:alerts' %}',
+        type:'json',
+        method:'GET',
+      data: {
+        postid: $('#like-post').val(),
+        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+        action: 'post'
+      },
+      success: function (json) {
+        document.getElementById("like-count").innerHTML = json['likes']
+        document.getElementById("dislike-count").innerHTML = json['dislikes']
+      },
+      error: function (xhr, errmsg, err) {
+        console.log(err)
+      }
+    });
+  }) {% endcomment %}
 </script>

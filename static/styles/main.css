@@ -74,3 +74,14 @@ body{
 	display: flex;
 	flex-direction: column-reverse;
 }
+
+.noImage {
+	margin-right: 40px;
+	/* height: 40px;
+	width: 40px; */
+}
+
+.imageThumbnail {
+	width: 40px;
+	height: 40px;
+}

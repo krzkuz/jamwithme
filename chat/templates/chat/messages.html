@@ -10,18 +10,24 @@ Messages
         <div class="col-md-12 col-lg-2">
             <h4>Conversations</h4>
             {% for conversation in conversations %}
-                {% if conversation.participants.all.count == 1 %}
+                {% if request.user.profile in conversation.not_show_for.all %}
                 {% else %}
                 <div class="border border rounded">
-                    <a href="{% url 'messages' conversation.id %}" class="link-secondary h5 text-decoration-none p-3">
+                    <a href="{% url 'messages' conversation.id %}" class="link-secondary text-decoration-none text-white h5">
                         {% for participant in conversation.participants.all %}
                             {% if request.user.profile == participant %}
                             {% else %}
                                 <div class="">
-                                    <img class="image-fluid rounded" style="max-width: 40px" src="{{participant.image_url}}" />{{participant.first_name}} {{participant.last_name}} 
+                                    <div class="">
+                                        <img class="image-fluid rounded imageThumbnail" src="{{participant.image_url}}" />{{participant.first_name}} {{participant.last_name}} 
+                                    </div>
                                 </div>                        
                             {% endif %}                        
                         {% endfor %}
+                        <div class="row">
+                            <a class="link-secondary text-decoration-none text-white" href="{% url 'delete-conversation' conversation.id %}">Delete conversation</a>
+                        </div>
+                        
                         </a>
                 </div>
                 {% endif %}
@@ -31,24 +37,30 @@ Messages
 
         <div class="col-md-12 col-lg-8">
             <div class="row">
-                {% if conversation_name %}
-                <div class="col">
-                    <h4>
-                        
-                        <a class="link-light text-decoration-none" href="{% url 'participants' conversation.id %}">{{conversation_name}}</a>
-                        
-                    </h4>
-                </div>
-                <div class="col">
-                    <h5>
-                        <a class="link-light text-decoration-none" href="{% url 'add-to-conversation' conversation.id %}">Add person to conversation</a>
-                    </h5>
-                </div>
-                <div class="col">
-                    <h5>
-                        <a class="link-light text-decoration-none" href="{% url 'remove-from-conversation' conversation.id %}">Remove person from conversation</a>
-                    </h5>
-                </div>
+                {% if request.user.profile in conversation.participants.all %}
+                    {% if conversation_name %}
+                    <div class="col">
+                        <h4>
+                            
+                            <a class="link-light text-decoration-none" href="{% url 'participants' conversation.id %}">{{conversation_name}}</a>
+                            
+                        </h4>
+                    </div>
+                    <div class="col">
+                        <h5>
+                            <a class="link-light text-decoration-none" href="{% url 'add-to-conversation' conversation.id %}">Add person to conversation</a>
+                        </h5>
+                    </div>
+                    <div class="col">
+                        <h5>
+                            <a class="link-light text-decoration-none" href="{% url 'remove-from-conversation' conversation.id %}">Remove person from conversation</a>
+                        </h5>
+                    </div>
+                    {% endif %}
+                {% elif not conversations %}
+                    <h5>Start new conversation</h5>
+                {% else %}
+                    <h5>You have been removed from this conversation</h5>
                 {% endif %}
             </div>
             
@@ -57,18 +69,31 @@ Messages
             <div class="chat">
                 <div id="chat-log">
                 {% for message in room_messages %}     
-                    {% if message.sender.user == request.user %}  
-                    <div class="">
-                        <div class="message receiver">{{message.body}}</div>   
-                    </div> 
-                                             
-                    {% else %}
-                    
-                    <div class="flex-container">                        
-                        <div class="message sender">{{message.body}}</div>
-                        <div class=""><img class="rounded-circle sender" style="height: 40px" src="{{message.sender.image_url}}"></div>
-                        
-                    </div>          
+                    {% if request.user.profile not in message.not_show_for.all %}
+                        {% ifchanged  message.sender %}
+                            {% if message.sender.user != request.user %}
+                                <div class="flex-container">                        
+                                    <div class="message sender">{{message.body}}</div>
+                                    <div><a href="{% url 'profile' message.sender.id %}"><img class="rounded-circle sender imageThumbnail" src="{{message.sender.image_url}}"></a></div>
+                                </div> 
+                            {% endif %} 
+                            {% if message.sender.user == request.user %}  
+                                <div class="">
+                                    <div class="message receiver">{{message.body}}</div>   
+                                </div> 
+                            {% endif %}
+                        {% else %}
+                            {% if message.sender.user != request.user %}
+                                <div class="flex-container">                        
+                                    <div class="message sender noImage">{{message.body}}</div>
+                                </div> 
+                            {% endif %} 
+                            {% if message.sender.user == request.user %}  
+                                <div class="">
+                                    <div class="message receiver">{{message.body}}</div>   
+                                </div> 
+                            {% endif %}
+                        {% endifchanged %}
                     {% endif %}
                 {% endfor %}
                 </div>
@@ -88,8 +113,8 @@ Messages
             {% for follow in following %}
             {% if follow.user not in followers and follow.user not in participants %}            
             <div>
-                <a href="{% url 'messages' follow.user.id %}" class="link-secondary h5 text-decoration-none p-3">
-                    <img class="image-fluid rounded" style="max-width: 40px" src="{{follow.user.image_url}}" />
+                <a href="{% url 'messages' follow.user.id %}" class="link-secondary text-decoration-none text-white h5">
+                    <img class="image-fluid rounded imageThumbnail" src="{{follow.user.image_url}}" />
                     {{follow.user.first_name}} {{follow.user.last_name}}</a>
             </div>
             <br>
@@ -99,8 +124,8 @@ Messages
             {% for follower in followers %}
             {% if follower not in participants %}
             <div>
-                <a href="{% url 'messages' follower.id %}" class="link-secondary h5 text-decoration-none p-3">
-                    <img class="image-fluid rounded" style="max-width: 40px" src="{{follower.image_url}}" />
+                <a href="{% url 'messages' follower.id %}" class="link-secondary text-decoration-none text-white h5">
+                    <img class="image-fluid rounded imageThumbnail"src="{{follower.image_url}}" />
                     {{follower.first_name}} {{follower.last_name}}</a>
             </div>
             <br>
@@ -110,16 +135,19 @@ Messages
     </div>
 </div>
  
-  {{ conversation.name|json_script:"room-name" }}
-  <!-- {{ request.user.profile.first_name|json_script:"username" }} -->
-  {{ conversation.id|json_script:"conversationId" }}
-  {{ request.user.profile.id|json_script:"loggedInUserId" }}
+{{ conversation.name|json_script:"room-name" }}
+<!-- {{ request.user.profile.first_name|json_script:"username" }} -->
+{{ conversation.id|json_script:"conversationId" }}
+{{ request.user.profile.id|json_script:"loggedInUserId" }}
+{{ id_list|json_script:"id_list"}}
+
   <script>
     const chatLog = document.querySelector('#chat-log')
     const roomName = JSON.parse(document.getElementById('room-name').textContent);
     // const username = JSON.parse(document.getElementById('username').textContent);
     const conversationId = JSON.parse(document.getElementById('conversationId').textContent);
-
+    const participantsIdsList = JSON.parse(document.getElementById('id_list').textContent);
+    console.log(participantsIdsList)
     if (!chatLog.hasChildNodes()){
         const emptyText = document.createElement('h3')
         emptyText.id = 'emptyText'
@@ -141,32 +169,36 @@ Messages
         // document.querySelector('#chat-log').value += (data.username + ': ' + data.message + '\n');
         const messageElement = document.createElement('div')
         const messageDiv = document.createElement('div')
+        const a = document.createElement('a')
         const userId = data['user_id']
         const loggedInUserId = JSON.parse(document.getElementById('loggedInUserId').textContent)
         messageElement.innerText = data.message
         const picture = document.createElement('img')
         picture.src = data['profile_picture']
+        a.href = data['link']
         picture.height = 40
         picture.classList.add('rounded-circle', 'sender')
-        
+        a.appendChild(picture)
         if (userId===loggedInUserId){
             messageElement.classList.add('message', 'receiver')
             messageDiv.appendChild(messageElement)
             chatLog.appendChild(messageDiv) 
         }
         else {
-            messageElement.classList.add('message', 'sender')
-            messageDiv.classList.add('flex-container')
-            messageDiv.appendChild(messageElement)
-            messageDiv.appendChild(picture)
-            chatLog.appendChild(messageDiv)  
-            // last = messageDiv.lastChild
-            // console.log(last)
-            // if (last===messageElement){
-            //     messageDiv.appendChild(picture)
-            // }
-            // chatLog.appendChild(messageDiv)  
-             
+            const lastMessage = chatLog.lastElementChild
+            if(lastMessage.getElementsByClassName('receiver').length > 0) {
+                messageElement.classList.add('message', 'sender')
+                messageDiv.classList.add('flex-container')
+                messageDiv.appendChild(messageElement)
+                messageDiv.appendChild(a)
+                chatLog.appendChild(messageDiv)  
+            }
+            else {
+                messageElement.classList.add('message', 'sender')
+                messageDiv.classList.add('flex-container', 'noImage')
+                messageDiv.appendChild(messageElement)
+                chatLog.appendChild(messageDiv) 
+            }
         }
         
       
@@ -190,6 +222,7 @@ Messages
             'message': message,
             // 'username': username,
             'conversationId': conversationId,
+            'participantsIdsList': participantsIdsList,
         }));
         messageInput.value = '';
     };

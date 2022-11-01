@@ -21,7 +21,7 @@ Profiles
             {% for profile in profiles %}
                 <div class="row container-fluid rounded border border-light">
                     <div class="col d-flex align-items-center">
-                        <a class="link-secondary h5 text-decoration-none p-3" href="{% url 'profile' profile.id %}">
+                        <a class="link-secondary text-decoration-none text-white h5" href="{% url 'profile' profile.id %}">
                         <img class="image-fluid rounded" style="max-width: 80px;" src="{{profile.image_url}}"> {{profile.first_name}} {{profile.last_name}}</a>
                     </div>
                     <div class="col d-flex align-items-center justify-content-end">

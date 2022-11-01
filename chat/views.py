@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from .models import Message, Conversation
 from users.models import Profile, Follow
-from .utils import create_conversation, create_conversation_name, profile_search
+from .utils import create_conversation, create_conversation_name, participants_list, profile_search
 from django.contrib.auth.decorators import login_required
 from users.utils import paginate_profiles
 from notification.models import Notification
@@ -62,7 +62,20 @@ def users_messages(request, pk):
         if notification.message:
             notification.seen = True
             notification.save()
-
+    
+    #list of participants id's
+    try :
+        id_list = participants_list(conversation.participants.all())
+    except:
+        id_list = None
+    # show deleted conversation if new message
+    try:
+        for message in room_messages:
+            if profile not in message.not_show_for.all():
+                conversation.not_show_for.remove(profile)
+    except:
+        pass
+    
     context = {
         'following': following,
         'followers': followers,
@@ -71,13 +84,15 @@ def users_messages(request, pk):
         'conversation': conversation,
         'participants': participants,
         'conversation_name': conversation_name,
-        # 'avatar': avatar,
+        'id_list': id_list,
     }
     return render(request, 'chat/messages.html', context)
 
 @login_required(login_url="login")
 def add_to_conversation(request, pk):
     conversation = Conversation.objects.get(id=pk)
+    if request.user.profile not in conversation.participants.all():
+        return render(request, 'error.html')
     profiles = Profile.objects.all()
     conversation_profiles = conversation.participants.all()
     excludes = [request.user.profile.id]
@@ -107,6 +122,8 @@ def add_to_conversation(request, pk):
 @login_required(login_url="login")
 def remove_from_conversation(request, pk):
     conversation = Conversation.objects.get(id=pk)
+    if request.user.profile not in conversation.participants.all():
+        return render(request, 'error.html')
     profiles = conversation.participants.all()
     
     profiles, search = profile_search(request, profiles)
@@ -119,7 +136,12 @@ def remove_from_conversation(request, pk):
         person = Profile.objects.get(id=person_id)
         conversation.participants.remove(person)
         conversation.save()
-        return redirect('messages', conversation.id)
+        if person == request.user.profile:
+            return redirect('messages', None)
+        # elif conversation.participants.all().count() == 1:
+
+        else:
+            return redirect('messages', conversation.id)
 
     #variable to choose template functionality
     choose = 'remove'
@@ -134,6 +156,23 @@ def remove_from_conversation(request, pk):
 
     return render(request, 'chat/add_to_conversation.html', context)
 
+@login_required(login_url="login")
+def delete_conversation(request, pk):
+    conversation = Conversation.objects.get(id=pk)
+    room_messages = Message.objects.filter(conversation=conversation)
+    if room_messages:
+        conversation.not_show_for.add(request.user.profile)
+        conversation.save()
+        for message in room_messages:
+            message.not_show_for.add(request.user.profile)
+            message.save()
+        return redirect('messages', None)
+    else:
+        conversation.delete()
+        return redirect('messages', None)
+ 
+
+@login_required(login_url="login")
 def participants(request, pk):
     conversation = Conversation.objects.get(id=pk)
     profiles = conversation.participants.all()

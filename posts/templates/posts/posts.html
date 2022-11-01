@@ -16,9 +16,9 @@ Jam With Me
     <div class="row justify-content-center">
       <div class="col-md-12 col-lg-2">
         <h5>Popular tags</h5>
-        <a href="{% url 'posts' %}?q= " class="link-secondary h5 text-decoration-none p-3"># All</a><br><br>
+        <a href="{% url 'posts' %}?q= " class="link-secondary text-decoration-none text-white h5"># All</a><br><br>
         {% for key, value in popular_tags.items %}
-        <a id="searchForm" href="{% url 'posts' %}?q={{key}}" class="link-secondary h5 text-decoration-none p-3"># {{key}} {{value}}</a>
+        <a id="searchForm" href="{% url 'posts' %}?q={{key}}" class="link-secondary text-decoration-none text-white h5"># {{key}} {{value}}</a>
         <br><br>
         {% endfor %}
       </div>
@@ -43,7 +43,7 @@ Jam With Me
                 </div>
                 <div class="p-3">
                     <a href="{% url 'profile' post.author.id %}" class="link-dark h5 text-decoration-none p-3">
-                      <img class="image-fluid rounded" style="max-width: 20px" src="{{post.author.image_url}}" />
+                      <img class="rounded-circle imageThumbnail" src="{{post.author.image_url}}" />
                       {{post.author.first_name}} {{post.author.last_name}}</a>
                     <a href="{% url 'post' post.id %}" class="link-dark h5 text-decoration-none p-3">{{post.subject}}</a>
                 </div>
@@ -74,8 +74,8 @@ Jam With Me
         {% for follow in following %}
         <div>
           <!-- <a href="{% url 'profile' follow.user.id %}" class="link-secondary h5 text-decoration-none p-3"> -->
-            <a href="{% url 'posts' %}?u={{follow.user.id}}" class="link-secondary h5 text-decoration-none p-3">
-            <img class="image-fluid rounded" style="max-width: 40px" src="{{follow.user.image_url}}" />{{follow.user.first_name}} {{follow.user.last_name}}</a>
+            <a href="{% url 'posts' %}?u={{follow.user.id}}" class="link-secondary text-decoration-none text-white h5">
+            <img class="rounded-circle imageThumbnail" src="{{follow.user.image_url}}" /> {{follow.user.first_name}} {{follow.user.last_name}}</a>
         </div>
         <br>
         <!-- <a href="{% url 'posts' %}?q={{tag}}" class="link-secondary h5 text-decoration-none p-3"># {{tag}}</a> -->

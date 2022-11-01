@@ -1,6 +1,8 @@
 from .models import Conversation
 from users.models import Profile
 from django.db.models import Q
+from django.core.serializers import serialize
+import json
 
 def create_conversation(request, pk):
     participant = Profile.objects.get(id=pk)
@@ -38,17 +40,8 @@ def profile_search(request, all_profiles):
         profiles = all_profiles
     return profiles, search
 
-
-
-# def conversation_avatar(request, conversation):
-#     # room_messages = conversation.message_set.all()
-#     last_messages = conversation.message_set.all().order_by('-created')[0:2]
-#     if last_messages[0].sender == last_messages[1].sender:
-#         return False
-#     else:
-#         return True
-    # for message in room_messages:
-    #     if message[-1].sender == message 
-    #         return True
-    #     else:
-    #         return False
+def participants_list(participants):
+    my_list = []
+    for participant in participants:
+        my_list.append(participant.id)
+    return my_list
