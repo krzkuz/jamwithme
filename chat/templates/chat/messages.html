@@ -147,15 +147,7 @@ Messages
     // const username = JSON.parse(document.getElementById('username').textContent);
     const conversationId = JSON.parse(document.getElementById('conversationId').textContent);
     const participantsIdsList = JSON.parse(document.getElementById('id_list').textContent);
-    console.log(participantsIdsList)
-    if (!chatLog.hasChildNodes()){
-        const emptyText = document.createElement('h3')
-        emptyText.id = 'emptyText'
-        emptyText.innerText = 'Start a conversation'
-        emptyText.className = 'emptyText'
-        chatLog.appendChild(emptyText)
-    }
-
+    
     const chatSocket = new WebSocket(
         'ws://'
         + window.location.host

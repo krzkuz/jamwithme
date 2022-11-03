@@ -31,6 +31,9 @@ class Notification(models.Model):
     # def url(self):
     class Meta:
         ordering = ['-created']
+    @property
+    def notification_image(self):
+        return self.from_user.image_url
 
     @property
     def name(self):

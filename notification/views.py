@@ -2,6 +2,8 @@ from django.shortcuts import redirect
 from notification.models import JamRequest, Notification
 from users.models import Profile
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from django.forms.models import model_to_dict
 # Create your views here.
 
 @login_required(login_url="login")
@@ -17,3 +19,15 @@ def notification_seen(request, pk):
     notification.seen = True
     notification.save()
     return redirect(notification.link)
+
+def get_new_notifications(request):
+    profile = Profile.objects.filter(user=request.user)
+    notifications_query_set = Notification.objects.filter(to_users__in=profile).exclude(seen=True)
+    notifications = [{
+        'id': notification.id , 
+        'name': notification.name,
+        'image': notification.notification_image,
+        'link': notification.link
+    } for notification in notifications_query_set]
+
+    return JsonResponse(notifications, safe=False)
