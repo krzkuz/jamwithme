@@ -1,12 +1,15 @@
 from django.shortcuts import render, redirect
 from django.shortcuts import get_object_or_404
-from users.models import Follow, Profile
+from users.models import Profile
 from .models import Post, Tag, Comment
 from .forms import PostForm
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from .utils import paginate_comments, paginate_posts
 from .utils import post_search
+from django.urls import reverse
+from django.http import HttpResponse
+import uuid
 
 def post(request, pk):
     post = Post.objects.get(id=pk)
@@ -16,16 +19,18 @@ def post(request, pk):
     dislikes = post.dislikes.all()
     custom_range, comments = paginate_comments(request, comments, 10)
 
-    if request.method == 'POST':
-        if request.user.is_authenticated:
-            if request.POST.get('comment'):
-                Comment.objects.get_or_create(
-                    author=request.user.profile,
-                    post=post,
-                    body=request.POST.get('comment')
-                    )
-                return redirect('post', pk)
-    
+    # creating comment for frontend
+    try:
+        author_link = reverse('profile', args=[request.user.profile.id]) 
+        author_picture = request.user.profile.image_url
+        author_name = str(request.user.profile.first_name) + ' ' + str(request.user.profile.last_name)
+        comment_id = uuid.uuid4
+    except:
+        author_link = None
+        author_picture = None
+        author_name = None
+        comment_id = None
+
     context = {
         'post': post,
         'tags': tags,
@@ -33,6 +38,10 @@ def post(request, pk):
         'likes': likes,
         'dislikes': dislikes,
         'custom_range': custom_range,
+        'author_link': author_link,
+        'author_picture': author_picture,
+        'author_name': author_name,
+        'comment_id': comment_id,
     }
     return render(request, 'posts/post.html', context)
 
@@ -99,6 +108,8 @@ def create_post(request):
 @login_required(login_url="login")
 def update_post(request, pk):
     post = Post.objects.get(id=pk)
+    if post.author != request.user.profile:
+        return render(request, 'error.html')
     form = PostForm(instance=post)
     tags = post.tags.all()
     str_tags = ''
@@ -113,7 +124,6 @@ def update_post(request, pk):
 
             for tag in tags:
                 post.tags.remove(tag)
-            # post.tags.all().delete()
             if get_tags:
                 for tag in get_tags:
                     tag, created = Tag.objects.get_or_create(name=tag.lower().capitalize())
@@ -128,6 +138,8 @@ def update_post(request, pk):
 @login_required(login_url="login")
 def delete_post(request, pk):
     post = Post.objects.get(id=pk)
+    if post.author != request.user.profile:
+        return render(request, 'error.html')
     if request.method == 'POST':
         post.delete() 
         return redirect('posts')
@@ -179,6 +191,32 @@ def dislike_post(request):
             'dislikes': dislikes,
             # 'liked': liked,
          })
+
+@login_required(login_url="login")
+def create_comment(request):
+    if request.method == 'POST':
+        pk = request.POST.get('postid')
+        id = request.POST.get('id')
+        post = Post.objects.get(id=pk)
+        body = request.POST.get('body')
+        if request.user.is_authenticated:
+            Comment.objects.get_or_create(
+                id=id,
+                author=request.user.profile,
+                post=post,
+                body=body
+                )
+            return HttpResponse("")
+
+
+@login_required(login_url="login")
+def delete_comment(request):
+    pk = request.POST.get('id')
+    print(pk)
+    comment = Comment.objects.get(id=pk)
+    if request.user.profile == comment.author:
+        comment.delete()
+        return HttpResponse("")
 
 # @login_required
 # def like_comment(request):
@@ -246,45 +284,3 @@ def dislike_comment(request, pk):
         comment.dislikes.add(request.user.profile)
     return redirect('post', comment.post.id)
 
-@login_required(login_url="login")
-def delete_comment(request, pk):
-    comment = Comment.objects.get(id=pk)
-    if request.user.profile == comment.author:
-        comment.delete()
-    return redirect(request.META.get('HTTP_REFERER'))
-# @login_required(login_url="login")
-# def create_comment(request, pk):
-#     print('test')
-#     if request.method == 'POST':
-#         print('test1')
-#         if request.user.is_authenticated:
-#             print('test2')
-#             Comment.objects.get_or_create(
-#                 author=request.user.profile,
-#                 post=post,
-#                 body=request.POST.get('comment')
-#                 )
-#             print('test3')
-#             return redirect('post', pk)
-        # elif request.POST.get('rate'):
-        #     messages.error(request, 'Login to rate a post')
-        #     return redirect('login')
-        # else:
-        #     messages.error(request, 'Login to add a comment')
-        #     return redirect('login')
-        
-
-# @login_required(login_url="login")
-# def delete_comment(request, pk):
-#     comment = Comment.objects.get(id=pk)
-
-# def django_messages(request):
-#     if 'comment' in request.POST:
-#         next = request.POST.get('next', '/')
-#         next = next[1:-1]
-#         print(next, '+++++++++')
-#         messages.error(request, 'Login to add a comment')
-#         return redirect('login', next)
-        # else:
-        #     messages.error(request, 'Login to rate this post')
-        #     return redirect('login')

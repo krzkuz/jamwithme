@@ -15,20 +15,15 @@ class JamRequest(models.Model):
 
 
 class Notification(models.Model):
-    # type 1-like/dislike(post, comment), 2-comment(post), 3-jamrequest, 4-follow
+    # type 1-like/dislike post, 2-like/dislike comment, 3-comment post, 4-jamrequest, 5-follow, 6-message
     type = models.IntegerField(null=True, blank=True)
     from_user = models.ForeignKey(Profile, on_delete=models.CASCADE, null=True, related_name='from_user')
     to_users = models.ManyToManyField(Profile, related_name='to_user')
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, null=True, blank=True)#like comment 
-    comment = models.ForeignKey(Comment, on_delete=models.CASCADE, null=True, blank=True)#like 
-    message = models.ForeignKey(Message, on_delete=models.CASCADE, null=True, blank=True)#
     link = models.URLField(null=True, blank=True)
     seen = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True)
     id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True, editable=False)
 
-    # @property
-    # def url(self):
     class Meta:
         ordering = ['-created']
     @property
@@ -38,25 +33,25 @@ class Notification(models.Model):
     @property
     def name(self):
         #post notification
-        if self.post:
-            if self.type == 1:
-                name = str(self.from_user) + ' reacted to your post'
-                return name
-            else:
-                name = str(self.from_user) + ' commented your post'
-                return name
-        #comment notification  
-        elif self.comment:
+
+        if self.type == 1:
+            name = str(self.from_user) + ' reacted to your post'
+            return name
+        elif self.type == 2:
             name = str(self.from_user) + ' reacted to your comment'
             return name
-        elif self.message:
+        #comment notification  
+        elif self.type == 3:
+            name = str(self.from_user) + ' commented your post'
+            return name
+        elif self.type == 6:
             name = 'New message from ' + str(self.from_user)
             return name
-        elif self.type == 3:
+        elif self.type == 4:
             #jamrequest
             name = str(self.from_user) + ' sent you jam request'
             return name
-        elif self.type == 4:
+        elif self.type == 5:
             #follow
             name = str(self.from_user) + ' is following you'
             return name

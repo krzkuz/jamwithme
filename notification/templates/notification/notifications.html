@@ -6,17 +6,16 @@
   </a>
 
   <div class="dropdown-menu notifications bg-white" aria-labelledby="dropdownMenuLink" id="notifications">
-    {% for notification in notifications %}
-    
-    {% if notification.seen %}
-    <a class="dropdown-item text-secondary" id="{{notification.id}}" href="{{notification.link}}">
-        <img class="rounded-circle imageThumbnail" src="{{notification.from_user.image_url}}"/>{{notification.name}}
-    </a>    
-    {% else %}
-    <a class="dropdown-item" id="{{notification.id}}" onclick="location.href='{% url 'notification-seen' notification.id %}'" >
-        <img class="rounded-circle imageThumbnail" src="{{notification.from_user.image_url}}"/>{{notification.name}}
-    </a>    
-    {% endif %}
+    {% for notification in notifications %}    
+      {% if notification.seen %}
+        <a class="dropdown-item text-secondary" id="{{notification.id}}" href="{{notification.link}}">
+            <img class="rounded-circle imageThumbnail" src="{{notification.from_user.image_url}}"/>{{notification.name}}
+        </a>    
+      {% else %}
+        <a class="dropdown-item" id="{{notification.id}}" href="{% url 'notification-seen' notification.id %}" >
+            <img class="rounded-circle imageThumbnail" src="{{notification.from_user.image_url}}"/>{{notification.name}}
+        </a>    
+      {% endif %}
     {% endfor %}
 </div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
@@ -33,7 +32,6 @@
         action: 'get'
       },
       success: function (json) {
-
         const notifications = document.getElementById("notifications")
         const x = notifications.querySelectorAll(".dropdown-item"); 
         const idList = []
@@ -51,11 +49,9 @@
             picture.classList.add('rounded-circle', 'imageThumbnail')
             linkElement.appendChild(picture)
             linkElement.innerHTML += json[i]['name']
-            notifications.appendChild(linkElement)
-          }
-          
-        }
-        
+            notifications.prepend(linkElement)
+          }          
+        }        
       },
       error: function (xhr, errmsg, err) {
         console.log(err)

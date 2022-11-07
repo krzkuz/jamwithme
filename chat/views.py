@@ -59,7 +59,7 @@ def users_messages(request, pk):
     # reset all message notifications when in this view
     notifications = Notification.objects.filter(to_users__in=user)
     for notification in notifications:
-        if notification.message:
+        if notification.type == 6:
             notification.seen = True
             notification.save()
     

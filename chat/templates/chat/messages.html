@@ -42,18 +42,18 @@ Messages
                     <div class="col">
                         <h4>
                             
-                            <a class="link-light text-decoration-none" href="{% url 'participants' conversation.id %}">{{conversation_name}}</a>
+                            <a class="link-secondary text-decoration-none text-white h5" href="{% url 'participants' conversation.id %}">{{conversation_name}}</a>
                             
                         </h4>
                     </div>
                     <div class="col">
                         <h5>
-                            <a class="link-light text-decoration-none" href="{% url 'add-to-conversation' conversation.id %}">Add person to conversation</a>
+                            <a class="link-secondary text-decoration-none text-white h5" href="{% url 'add-to-conversation' conversation.id %}">Add person to conversation</a>
                         </h5>
                     </div>
                     <div class="col">
                         <h5>
-                            <a class="link-light text-decoration-none" href="{% url 'remove-from-conversation' conversation.id %}">Remove person from conversation</a>
+                            <a class="link-secondary text-decoration-none text-white h5" href="{% url 'remove-from-conversation' conversation.id %}">Remove person from conversation</a>
                         </h5>
                     </div>
                     {% endif %}
@@ -65,7 +65,7 @@ Messages
             </div>
             
 
-            <div class="row container-fluid rounded border border-secondary rounded">
+            <div class="row container-fluid rounded border border-light rounded">
             <div class="chat">
                 <div id="chat-log">
                 {% for message in room_messages %}     

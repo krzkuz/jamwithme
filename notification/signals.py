@@ -13,7 +13,6 @@ def post_like_notification(sender, instance, action, **kwargs):
         notification = Notification.objects.create(
             type = 1,
             from_user = post.likes.first(),  
-            post = post, 
             link = reverse('post', args=[post.id])     
         )
         notification.to_users.add(post.author)
@@ -27,7 +26,6 @@ def post_dislike_notification(sender, instance, action, **kwargs):
         notification = Notification.objects.create(
             type = 1,
             from_user = post.dislikes.first(),  
-            post = post, 
             link = reverse('post', args=[post.id])     
         )
         notification.to_users.add(post.author)
@@ -39,8 +37,8 @@ def comment_to_post_notification(sender, instance, created, **kwargs):
     if created:
         comment = instance
         notification = Notification.objects.create(
+            type = 3,
             from_user = comment.author,
-            post = comment.post,
             link = reverse('post', args=[comment.post.id]),         
         )
         notification.to_users.add(comment.post.author)
@@ -52,11 +50,11 @@ def comment_like_notification(sender, instance, action, **kwargs):
     if action == 'post_add':
         comment = instance
         notification = Notification.objects.create(
+            type = 2,
             from_user = comment.likes.first(),  
-            comment = comment, 
             link = reverse('post', args=[comment.post.id])     
         )
-        notification.to_users.add(comment.post.author)
+        notification.to_users.add(comment.author)
         notification.save() 
 m2m_changed.connect(comment_like_notification, sender=Comment.likes.through)
 
@@ -65,11 +63,11 @@ def comment_dislike_notification(sender, instance, action, **kwargs):
     if action == 'post_add':
         comment = instance
         notification = Notification.objects.create(
+            type = 2,
             from_user = comment.dislikes.first(),  
-            comment = comment, 
             link = reverse('post', args=[comment.post.id])     
         )
-        notification.to_users.add(comment.post.author)
+        notification.to_users.add(comment.author)
         notification.save() 
 m2m_changed.connect(comment_dislike_notification, sender=Comment.dislikes.through)
 
@@ -78,7 +76,7 @@ def follow_notification(sender, instance, action, **kwargs):
     if action == 'post_add':
         follow = instance
         notification = Notification.objects.create(
-            type = 4,
+            type = 5,
             from_user = follow.follower.first(),
             link = reverse('profile', args=[follow.follower.first().id])         
         )
@@ -91,7 +89,7 @@ def jam_request_notification(sender, instance, created, **kwargs):
     if created:
         jam_request = instance
         notification = Notification.objects.create(
-            type = 3,
+            type = 4,
             from_user = jam_request.sender,
             link = reverse('profile', args=[jam_request.sender.id])         
         )
@@ -104,9 +102,8 @@ def message_notification(sender, instance, created, **kwargs):
     if created:
         message = instance
         notification = Notification.objects.create(
-            type = 5,
+            type = 6,
             from_user = message.sender,  
-            message = message, 
             link = reverse('messages', args=[message.conversation.id])     
         )
         participants = message.conversation.participants.exclude(id=message.sender.id)

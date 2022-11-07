@@ -3,8 +3,7 @@ from notification.models import JamRequest, Notification
 from users.models import Profile
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from django.forms.models import model_to_dict
-# Create your views here.
+from django.urls import reverse
 
 @login_required(login_url="login")
 def jam_request(request, pk):
@@ -27,7 +26,7 @@ def get_new_notifications(request):
         'id': notification.id , 
         'name': notification.name,
         'image': notification.notification_image,
-        'link': notification.link
+        'link': reverse('notification-seen', args=[notification.id]) 
     } for notification in notifications_query_set]
 
     return JsonResponse(notifications, safe=False)

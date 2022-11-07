@@ -111,7 +111,6 @@ def follow(request, pk):
     follow = Follow.objects.get(user=user)
     follow.follower.add(request.user.profile)
     return redirect(request.META.get('HTTP_REFERER'))
-    # return redirect('profile', pk)
 
 @login_required(login_url="login")
 def unfollow(request, pk):
@@ -119,7 +118,6 @@ def unfollow(request, pk):
     follow = Follow.objects.get(user=user)
     follow.follower.remove(request.user.profile)
     return redirect(request.META.get('HTTP_REFERER'))
-    # return redirect('profile', pk)
 
 @login_required(login_url="login")
 def followers(request, pk):

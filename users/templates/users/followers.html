@@ -20,10 +20,10 @@ Followers
             <h5>{{profile.first_name}} {{profile.last_name}} followers:</h5>
 
             {% for follower in followers %}
-            <div class="row container-fluid rounded border border-light">
-                <div class="col d-flex align-items-center">
+            <div class="row container-fluid rounded border border-light d-flex align-items-center">
+                <div class="col ">
                     <a class="link-secondary text-decoration-none text-white h5" href="{% url 'profile' follower.id %}">
-                    <img class="image-fluid rounded" style="height: 80px;"  src="{{follower.image_url}}"> {{follower.first_name}} {{follower.last_name}}</a>
+                    <img class="image-fluid rounded imageThumbnailBig" style="height: 80px;"  src="{{follower.image_url}}"> {{follower.first_name}} {{follower.last_name}}</a>
                 </div>
                 
                 <div class="col d-flex align-items-center justify-content-end">

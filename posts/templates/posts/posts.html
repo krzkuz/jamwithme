@@ -34,32 +34,39 @@ Jam With Me
         {% endif %}
         {% if posts %}
           {% for post in posts %}
-            <div class="border border-secondary rounded bg-secondary">
+            <div class="border border-light rounded bg-secondary">
                 <div class="d-flex justify-content-end">
                     {% if request.user == post.author.user %}
-                    <a href="{% url 'update-post' post.id %}" class="btn btn-outline-light">Update</a>
-                    <a href="{% url 'delete-post' post.id %}" class="btn btn-outline-light">Delete</a>
+                    <a href="{% url 'update-post' post.id %}" class="btn btn-link link-secondary text-decoration-none text-dark h5">Update</a>
+                    <a href="{% url 'delete-post' post.id %}" class="btn btn-link link-secondary text-decoration-none text-dark h5">Delete</a>
                     {% endif %}
                 </div>
                 <div class="p-3">
-                    <a href="{% url 'profile' post.author.id %}" class="link-dark h5 text-decoration-none p-3">
+                    <a href="{% url 'profile' post.author.id %}" class="btn btn-link link-secondary text-decoration-none text-dark h5">
                       <img class="rounded-circle imageThumbnail" src="{{post.author.image_url}}" />
                       {{post.author.first_name}} {{post.author.last_name}}</a>
-                    <a href="{% url 'post' post.id %}" class="link-dark h5 text-decoration-none p-3">{{post.subject}}</a>
+                    <a href="{% url 'post' post.id %}" class="link-secondary text-decoration-none text-dark h5">{{post.subject}}</a>
                 </div>
                 <br>
-                <p class="p-3">{{post.body}}</p>
+                <p class="p-3 text-dark">{{post.body}}</p>
                 
                 {% if post.image_url %}
-                <img class="image-fluid" style="max-width: 100%" src="{{post.picture.url}}" />
+                <div class="d-flex justify-content-center rounded">
+                  <img class="rounded" style="max-width: 100%" src="{{post.picture.url}}" />
+                </div>
                 {% endif %}
                 {% if post.video_url %}
-                <video class="embed-responsive embed-responsive-16by9" controls="controls" style="max-width: 100%">
-                    <source src="{{post.video_url}}" type="video/mp4">
-                </video>
+                <div class="d-flex justify-content-center rounded">
+                  <video class="embed-responsive embed-responsive-16by9 rounded" controls="controls" style="max-width: 100%">
+                      <source src="{{post.video_url}}" type="video/mp4">
+                  </video>
+                </div>
                 {% endif %}
                 <br />
-                {{post.tag}}<br />
+                {% for tag in post.tags.all %}
+                <a href="{% url 'posts' %}?q={{tag}}" class="btn btn-link link-secondary text-decoration-none text-dark h5" ># {{tag}}</a>
+                {% endfor %}
+
             </div>
             <br>
             {% endfor %}   

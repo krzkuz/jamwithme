@@ -67,7 +67,6 @@ class ChatRoomConsumer(AsyncWebsocketConsumer):
         user_id = event['user_id']
         profile_picture = event['profile_picture']
         link = event['link']
-        # username = event['username']
         if message != '':
             await self.send(text_data=json.dumps({
                 'message': message,

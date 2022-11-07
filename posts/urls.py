@@ -12,7 +12,8 @@ urlpatterns = [
     path('dislike-post/', views.dislike_post, name='dislike-post'), 
     path('like-comment/<uuid:pk>', views.like_comment, name='like-comment'),
     path('dislike-comment/<uuid:pk>', views.dislike_comment, name='dislike-comment'),
-    path('delete-comment/<uuid:pk>', views.delete_comment, name='delete-comment'),
+    path('create-comment/', views.create_comment, name='create-comment'),
+    path('delete-comment', views.delete_comment, name='delete-comment'),
     # path('django-messages/', views.django_messages, name='django-messages'),
     
 ]
