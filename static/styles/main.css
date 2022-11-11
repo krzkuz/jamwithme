@@ -37,6 +37,14 @@ body{
 	flex-direction: column-reverse;
 }
 
+.scroll {
+	height: 700px;
+	overflow: auto;
+	overflow-x: hidden;
+	flex-direction: column-reverse;
+
+}
+
 .flex-container {
 	display: flex;
 	justify-content: flex-end;
@@ -59,8 +67,8 @@ body{
 }
 
 .imageThumbnailBig {
-	width: 80px;
-	height: 80px;
+	width: 150px;
+	height: 150px;
 }
 
 .comment {
@@ -83,4 +91,12 @@ body{
 
 .text-padding {
 	padding: 10px;
+}
+
+.text-margin {
+	margin: 10px;
+}
+
+.text-margin-small {
+	margin: 5px;
 }

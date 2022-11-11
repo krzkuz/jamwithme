@@ -23,15 +23,15 @@
         </div>
         <br>
         <p class="p-5 text-dark">{{post.body}}</p>
-        <div class="d-flex justify-content-center container-fluid">
+        <div class="">
           {% if post.image_url %}
-          <div class="border border-light rounded">
-            <img class="rounded" style="max-width: 100%" src="{{post.picture.url}}" />
+          <div class="d-flex justify-content-center rounded text-margin">
+            <img class="rounded border border-light" style="max-width: 100%" src="{{post.picture.url}}" />
           </div>              
           {% endif %}
           {% if post.video_url %}
-            <div class="container-fluid rounded">
-              <video class="embed-responsive embed-responsive-16by9 rounded" controls="controls" style="max-width: 100%">
+            <div class="d-flex justify-content-center rounded text-margin">
+              <video class="embed-responsive embed-responsive-16by9 rounded border border-light" controls="controls" style="max-width: 100%">
                 <source src="{{post.video_url}}" type="video/mp4">
             </video>
             </div><br>          

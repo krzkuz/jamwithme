@@ -19,7 +19,7 @@ def post(request, pk):
     dislikes = post.dislikes.all()
     custom_range, comments = paginate_comments(request, comments, 10)
 
-    # creating comment for frontend
+    # data to create comment in frontend
     try:
         author_link = reverse('profile', args=[request.user.profile.id]) 
         author_picture = request.user.profile.image_url
