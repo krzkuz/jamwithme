@@ -10,7 +10,11 @@ Register
         <!-- {% for field in form %}
         {{field}}<br>
         {% endfor %} -->
-        {{form.as_p}}
+        {% for field in form %}
+            {{field}}
+            <br>
+        {% endfor %}
+        {% comment %} {{form.as_p}} {% endcomment %}
         <input class="btn btn-outline-light" type="submit" value="Register">
     </form>
 </div>

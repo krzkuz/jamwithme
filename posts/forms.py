@@ -12,3 +12,10 @@ class PostForm(ModelForm):
         for name, field in self.fields.items():
             field.widget.attrs.update({'class': 'form-control'})
             # field.widget.attrs.update({'placeholder': name})
+
+            if name == 'password1':
+                field.widget.attrs.update({'placeholder': 'password'})
+            elif name == 'password2':
+                field.widget.attrs.update({'placeholder': 'confirm password'})
+            else:
+                field.widget.attrs.update({'placeholder': str(name).replace('_', ' ')})

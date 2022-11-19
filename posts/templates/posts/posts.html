@@ -79,7 +79,7 @@ Jam With Me
         {% for follow in following %}
         <div>
           <!-- <a href="{% url 'profile' follow.user.id %}" class="link-secondary h5 text-decoration-none p-3"> -->
-            <a href="{% url 'posts' %}?u={{follow.user.id}}" class="link-secondary text-decoration-none text-white h5">
+            <a href="{% url 'posts' %}?u={{follow.user.id}}" class="link-secondary text-decoration-none text-white h6">
             <img class="rounded-circle imageThumbnail" src="{{follow.user.image_url}}" /> {{follow.user.first_name}} {{follow.user.last_name}}</a>
         </div>
         <br>

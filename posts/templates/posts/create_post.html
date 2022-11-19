@@ -9,15 +9,19 @@ Post
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="">
+            <h5>Add new post</h5>
             <!-- {% for field in form %}
             <label class="form-label">{{field.label}}</label>
             <br>
             {{field}}
             <br>
             {% endfor %} -->
-            {{form.as_p}}
-            <p>Tags</p>
-            <input class="form-control" type="text" name="tags" value="{{tags}}"><br><br>
+            {% for field in form %}
+                {{field}}
+                <br>
+            {% endfor %}
+            {% comment %} {{form.as_p}} {% endcomment %}
+            <input class="form-control" type="text" name="tags" value="{{tags}}" placeholder="Tags"><br>
             <button type="submit" class="btn btn-secondary">Post</button>
         </div>
     </form>

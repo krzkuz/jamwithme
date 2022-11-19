@@ -19,22 +19,7 @@
     <link rel="stylesheet" href="{% static 'styles/main.css' %}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
     <link href="//netdna.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.css" rel="stylesheet" />
-    <script>
-        setInterval(function(){
-            $.ajax({
-                url:'{% url "get-new-notifications" %}',
-                type:'json',
-                method:'GET',
-              data: {
-                action: 'get'
-              },
-              success: function(result){
-                  $('#notification-count').text(result.length);
-              }
-              });
-        }, 3000);
-        
-    </script>
+  
     
 </head>
 <body>

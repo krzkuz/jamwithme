@@ -14,18 +14,18 @@ Messages
                 {% if request.user.profile in conversation.not_show_for.all %}
                 {% else %}
                     <div class="border border rounded">
-                        <a href="{% url 'messages' conversation.id %}" class="link-secondary text-decoration-none text-white h5">
+                        <a href="{% url 'messages' conversation.id %}" class="link-secondary text-decoration-none text-white h6">
                             {% for participant in conversation.participants.all %}
                                 {% if request.user.profile == participant %}
                                 <div class="">
                                     <div class="">
-                                        <img class="image-fluid rounded imageThumbnail" src="{{participant.image_url}}"/>You
+                                        <img class="rounded-circle imageThumbnail" src="{{participant.image_url}}"/>You
                                     </div>
                                 </div>  
                                 {% else %}
                                     <div class="">
                                         <div class="">
-                                            <img class="image-fluid rounded imageThumbnail" src="{{participant.image_url}}" />{{participant.first_name}} {{participant.last_name}} 
+                                            <img class="rounded-circle imageThumbnail" src="{{participant.image_url}}" />{{participant.first_name}} {{participant.last_name}} 
                                         </div>
                                     </div>                        
                                 {% endif %}                        
@@ -126,8 +126,8 @@ Messages
                 {% for follow in following %}
                 {% if follow.user not in followers and follow.user not in participants %}            
                 <div>
-                    <a href="{% url 'messages' follow.user.id %}" class="link-secondary text-decoration-none text-white h5">
-                        <img class="image-fluid rounded imageThumbnail" src="{{follow.user.image_url}}" />
+                    <a href="{% url 'messages' follow.user.id %}" class="link-secondary text-decoration-none text-white h6">
+                        <img class="rounded-circle imageThumbnail" src="{{follow.user.image_url}}" />
                         {{follow.user.first_name}} {{follow.user.last_name}}</a>
                 </div>
                 <br>
@@ -137,8 +137,8 @@ Messages
                 {% for follower in followers %}
                 {% if follower not in participants %}
                 <div>
-                    <a href="{% url 'messages' follower.id %}" class="link-secondary text-decoration-none text-white h5">
-                        <img class="image-fluid rounded imageThumbnail"src="{{follower.image_url}}" />
+                    <a href="{% url 'messages' follower.id %}" class="link-secondary text-decoration-none text-white h6">
+                        <img class="rounded-circle imageThumbnail"src="{{follower.image_url}}" />
                         {{follower.first_name}} {{follower.last_name}}</a>
                 </div>
                 <br>

@@ -14,6 +14,7 @@ class ProfileForm(ModelForm):
 
         for name, field in self.fields.items():
             field.widget.attrs.update({'class': 'form-control'})
+            field.widget.attrs.update({'placeholder': str(name).replace('_', ' ')})
             # field.widget.attrs.update({'placeholder': name})
 
 class InstrumentForm(ModelForm):
@@ -46,4 +47,4 @@ class RegisterUserForm(UserCreationForm):
             elif name == 'password2':
                 field.widget.attrs.update({'placeholder': 'confirm password'})
             else:
-                field.widget.attrs.update({'placeholder': name})
+                field.widget.attrs.update({'placeholder': str(name).replace('_', ' ')})

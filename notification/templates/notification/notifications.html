@@ -33,6 +33,22 @@
 </div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <script>
+  setInterval(function(){
+      $.ajax({
+          url:'{% url "get-new-notifications" %}',
+          type:'json',
+          method:'GET',
+        data: {
+          action: 'get'
+        },
+        success: function(result){
+            $('#notification-count').text(result.length);
+        }
+        });
+  }, 3000);
+  
+</script>
+<script>
 
 
   $(document).on('click', '#dropdownMenuLink', function (e) {
