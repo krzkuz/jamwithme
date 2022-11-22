@@ -11,6 +11,7 @@ from django.urls import reverse
 from django.http import HttpResponse
 import uuid
 
+
 def post(request, pk):
     post = Post.objects.get(id=pk)
     tags = post.tags.all()
@@ -18,7 +19,6 @@ def post(request, pk):
     likes = post.likes.all()
     dislikes = post.dislikes.all()
     custom_range, comments = paginate_comments(request, comments, 10)
-
     # data to create comment in frontend
     try:
         author_link = reverse('profile', args=[request.user.profile.id]) 

@@ -1,10 +1,8 @@
-# from asyncio.windows_events import NULL
-# import email
 from django.db import models
 from django.contrib.auth.models import User
 import uuid
 
-# Create your models here.
+
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
     first_name = models.CharField(max_length=100, null=True, blank=False)
@@ -38,6 +36,7 @@ class Follow(models.Model):
     follower = models.ManyToManyField(Profile, blank=True, related_name='follower')
     created = models.DateTimeField(auto_now_add=True)
     id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True, editable=False)
+    boo = models.BooleanField(default=True)
 
     def __str__(self):
         return str(self.user)
