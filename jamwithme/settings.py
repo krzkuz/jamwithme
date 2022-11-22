@@ -23,11 +23,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = str(os.environ.get('DEBUG')) == '1'
+# DEBUG = str(os.environ.get('DEBUG')) == '1'
 
-ALLOWED_HOSTS = []
-if not DEBUG:
-    ALLOWED_HOSTS+= [os.environ.get('ALLOWED_HOSTS')]
+# ALLOWED_HOSTS = []
+# if not DEBUG:
+#     ALLOWED_HOSTS+= [os.environ.get('ALLOWED_HOSTS')]
+DEBUG = True
+
+ALLOWED_HOSTS = ['jwm95.herokuapp.com']
 
 # Application definition
 
