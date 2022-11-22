@@ -36,7 +36,6 @@ ALLOWED_HOSTS = ['jwm95.herokuapp.com']
 
 INSTALLED_APPS = [
     'channels',
-    'channels_postgres',
     'rest_framework',
     'storages',
     'daphne',
