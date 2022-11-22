@@ -30,7 +30,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 #     ALLOWED_HOSTS+= [os.environ.get('ALLOWED_HOSTS')]
 DEBUG = True
 
-ALLOWED_HOSTS = ['jwm95.herokuapp.com']
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
