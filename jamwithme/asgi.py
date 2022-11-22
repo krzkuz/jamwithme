@@ -26,9 +26,9 @@ import django
 from channels.routing import ProtocolTypeRouter, get_default_application
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "jamwithme.settings")
-
-django_asgi_app = get_default_application()
 django.setup()
+django_asgi_app = get_default_application()
+
 application = ProtocolTypeRouter({
     "http": django_asgi_app,
 })
