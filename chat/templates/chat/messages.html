@@ -162,7 +162,7 @@ Messages
     const participantsIdsList = JSON.parse(document.getElementById('id_list').textContent);
     
     const chatSocket = new WebSocket(
-        'ws://'
+        'wss://'
         + window.location.host
         + '/ws/chat/'
         + roomName
