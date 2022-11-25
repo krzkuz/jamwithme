@@ -161,8 +161,10 @@ Messages
     const conversationId = JSON.parse(document.getElementById('conversationId').textContent);
     const participantsIdsList = JSON.parse(document.getElementById('id_list').textContent);
     
+    var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
     const chatSocket = new WebSocket(
-        'ws://'
+        ws_scheme
+        + '://'
         + window.location.host
         + '/ws/chat/'
         + roomName
