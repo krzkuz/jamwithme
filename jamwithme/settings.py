@@ -35,10 +35,12 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    # "sslserver",
     'channels',
     'rest_framework',
     'storages',
     'daphne',
+
 
     "django.contrib.admin",
     "django.contrib.auth",
