@@ -163,12 +163,7 @@ Messages
     
     var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
     const chatSocket = new WebSocket(
-        ws_scheme
-        + '://'
-        + window.location.host
-        + '/ws/chat/'
-        + roomName
-        + '/'
+        ws_scheme + '://' + window.location.host + ":8001/";
     );
 
     chatSocket.onmessage = function(e) {
