@@ -72,7 +72,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-CSRF_TRUSTED_ORIGINS = ['https://jwm95.herokuapp.com']
+CSRF_TRUSTED_ORIGINS = ['https://jwm95.herokuapp.com', 'https://jamwithme-production.up.railway.app/']
 
 ROOT_URLCONF = "jamwithme.urls"
 
