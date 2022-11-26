@@ -21,7 +21,7 @@ SECRET_KEY = config('SECRET_KEY')
 
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = ['164.92.96.248']
+ALLOWED_HOSTS = ['164.92.96.248', 'jamwithmexyz.click', 'www.jamwithmexyz.click']
 
 ROOT_URLCONF = f'{config("PROJECT_NAME")}.urls'
 
@@ -119,10 +119,6 @@ USE_TZ = True
 
 MEDIA_URL = '/media/'
 
-STATICFILES_DIRS = [
-    BASE_DIR/'static'
-]
-
 MEDIA_ROOT = BASE_DIR/'static/images/'
 STATIC_ROOT = BASE_DIR/'staticfiles'
 # Default primary key field type
@@ -207,6 +203,6 @@ EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = 'qwe'
 
 
-BASE_URL = "http://164.92.96.248"
+BASE_URL = "jamwithmexyz.click"
 
 
