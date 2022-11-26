@@ -162,6 +162,7 @@ Messages
     const participantsIdsList = JSON.parse(document.getElementById('id_list').textContent);
     
     var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
+   
     const chatSocket = new WebSocket(
         ws_scheme + '://' + window.location.host + ":8001/"
     );
