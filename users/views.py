@@ -59,7 +59,9 @@ def profile(request, pk):
     skills = Instrument.objects.filter(player=profile)
     follow = Follow.objects.get(user=profile)
     followers = follow.follower.all()
+    print('hello')
     following = Follow.objects.filter(follower=profile)
+
 
 
     context = {

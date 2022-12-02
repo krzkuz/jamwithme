@@ -164,7 +164,14 @@ Messages
     var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
    
     const chatSocket = new WebSocket(
-        ws_scheme + '://' + window.location.host + ":8001/"
+
+        ws_scheme
+        + '://'
+        + window.location.host
+        + ":8001"
+        + '/ws/chat/'
+        + roomName
+        + '/'
     );
 
     chatSocket.onmessage = function(e) {

@@ -1,3 +1,2 @@
-env
-static
-.env
+venv
+settings.ini
