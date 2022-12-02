@@ -20,8 +20,8 @@ def register_user(request):
             messages.success(request, 'You have created an account')
             return redirect('posts')
         else:
-            messages.error(request, 'Wrong username or password')
-
+            messages.info(request, 'invalid registration details')
+            return render(request, "users/register.html", {"form": form})
     context = {
         'form': form
     }
