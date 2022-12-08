@@ -108,6 +108,16 @@ def user_skill(request):
     return render(request, 'users/skill_form.html', context)
 
 @login_required(login_url="login")
+def delete_profile(request):
+    profile = request.user.profile
+    if request.method == 'POST':
+        logout(request)
+        profile.delete() 
+        messages.success(request, 'You have deleted your account')
+        return redirect('posts')
+    return render(request, 'users/delete_profile.html')
+    
+@login_required(login_url="login")
 def follow(request, pk):
     user = Profile.objects.get(id=pk)
     follow = Follow.objects.get(user=user)

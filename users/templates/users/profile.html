@@ -72,6 +72,7 @@ Profile
 
       {% if request.user.profile.id == profile.id %} 
       <a href="{% url 'settings' %}" class="btn btn-outline-light">Edit profile</a>
+      <a href="{% url 'delete_profile' %}" class="btn btn-outline-light">Delete account</a>
       {% endif %} 
       <br><br>
       <h5>Skills:</h5>
