@@ -186,7 +186,7 @@ Messages
         picture.src = data['profile_picture']
         a.href = data['link']
         picture.height = 40
-        picture.classList.add('rounded-circle', 'sender')
+        picture.classList.add('rounded-circle', 'sender', 'imageThumbnail')
         a.appendChild(picture)
         if (userId===loggedInUserId){
             messageElement.classList.add('message', 'receiver')

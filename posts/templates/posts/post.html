@@ -15,9 +15,13 @@
     <div class="d-flex justify-content-center">
       <div class="rounded bg-secondary">
         <div class="d-flex p-3 align-items-center">
+          {% if post.author %}
           <a href="{% url 'profile' post.author.id %}" class="btn btn-link link-secondary text-decoration-none text-dark h5">
             <img class="rounded-circle imageThumbnailMedium" src="{{post.author.image_url}}" />
             {{post.author.first_name}} {{post.author.last_name}}</a>
+          {% else %}
+          <p>Deleted user</p>
+          {% endif %}
             <input type="hidden" value={{post.id}} id="post-id">
             <h5 class="text-dark h5 p-3">{{post.subject}}</h5>
       </div>

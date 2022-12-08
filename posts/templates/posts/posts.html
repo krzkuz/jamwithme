@@ -42,9 +42,14 @@ Jam With Me
                     {% endif %}
                 </div>
                 <div class="p-3">
+                   {% if post.author %}
                     <a href="{% url 'profile' post.author.id %}" class="btn btn-link link-secondary text-decoration-none text-dark h5">
-                      <img class="rounded-circle imageThumbnailMedium" src="{{post.author.image_url}}" />
-                      {{post.author.first_name}} {{post.author.last_name}}</a>
+                      
+                        <img class="rounded-circle imageThumbnailMedium" src="{{post.author.image_url}}" />
+                        {{post.author.first_name}} {{post.author.last_name}}</a>
+                  {% else %}
+                      <p>Deleted user</p>
+                  {% endif %}
                     <a href="{% url 'post' post.id %}" class="link-secondary text-decoration-none text-dark h5">{{post.subject}}</a>
                 </div>
                 <br>

@@ -3,6 +3,7 @@ from django.forms import ModelForm
 from .models import Profile, Instrument
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from django import forms
 
 class ProfileForm(ModelForm):
     class Meta:
@@ -33,6 +34,9 @@ class InstrumentForm(ModelForm):
                 field.widget.attrs.update({'placeholder': 'level'})
 
 class RegisterUserForm(UserCreationForm):
+    first_name = forms.CharField(required=True)
+    last_name = forms.CharField(required=True)
+    email = forms.EmailField(required=True)
     class Meta:
         model = User
         fields = ['username', 'first_name', 'last_name', 'email']
