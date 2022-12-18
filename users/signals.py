@@ -16,14 +16,17 @@ def create_profile(sender, instance, created, **kwargs):
         )
         subject = 'Welcome to Jam With Me'
         message = 'We are glad you are here'
-        send_mail(
-            subject,
-            message,
-            settings.EMAIL_HOST_USER,
-            [profile.email],
-            fail_silently=False,
+        try:
+            send_mail(
+                subject,
+                message,
+                settings.EMAIL_HOST_USER,
+                [profile.email],
+                fail_silently=False,
 
-        )
+            )
+        except:
+            pass
         
 
 post_save.connect(create_profile, sender=User)
