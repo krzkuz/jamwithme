@@ -39,16 +39,6 @@ Redis database.
 
 *PostgreSQL
 
-## Test account
-
-You won't be able to do much without creating an account or 
-logging in. 
-
-login: james
-
-password: qwerty@1234
-
-[jamwithmexyz.click](https://www.jamwithmexyz.click/)
 
 ## Launch
 
